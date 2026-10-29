@@ -19,7 +19,7 @@ render=function(){
  }
  // Rebuilding an entire view should never force the reader to the beginning.
  requestAnimationFrame(()=>{window.scrollTo({top:Math.min(scrollY,Math.max(0,document.documentElement.scrollHeight-innerHeight)),behavior:'instant'});const nextMain=document.querySelector('.v4-main');if(nextMain)nextMain.scrollTop=mainScroll;fdgDraw();});
- if(S?.view==='match'&&S.match?.live&&!S.match.live.done)fdgResumeTicker();
+ if(S?.view==='match'&&S.match?.live&&!S.match.live.done&&S.match.live.engine!==6)fdgResumeTicker();
 };
 function fdgToggleNav(){FDG5.compact=!FDG5.compact;store.setItem('fdg_compact_sidebar',FDG5.compact?'1':'0');document.querySelector('.v4-shell')?.classList.toggle('fdg-compact-nav',FDG5.compact)}
 async function fdgFullscreen(){
@@ -27,7 +27,7 @@ async function fdgFullscreen(){
  catch(e){notify('El navegador ha rechazado el modo de pantalla completa.');}
 }
 const fdgPreviousMatchScreen=v4MatchScreen;
-v4MatchScreen=fdgLiveView;
+v4MatchScreen=function(){return S?.match?.live?.engine===6?'<section class="v4-panel">Recuperando la retransmisión de tu partido…</section>':fdgLiveView();};
 window.Game.playMatch=fdgStartLive;
 window.Game.livePause=fdgTogglePause;
 window.Game.liveSpeed=fdgSpeed;
@@ -39,5 +39,5 @@ window.Game.fullscreen=fdgFullscreen;
 const fdgOldTab=window.Game.tab;
 window.Game.tab=function(tab){if(S?.view==='match'&&S.match?.live&&!S.match.live.done){notify('Termina el partido antes de salir de la retransmisión.');return;}fdgOldTab(tab)};
 // Restored autosaves from earlier versions remain supported (V4 schema unchanged).
-if(S){if(S.match?.live&&S.view==='match'&&!S.match.live.done)fdgResumeTicker();render()}
+if(S){if(S.match?.live&&S.view==='match'&&!S.match.live.done&&S.match.live.engine!==6)fdgResumeTicker();render()}
 else render();

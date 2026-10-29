@@ -1,10 +1,20 @@
-# FUERA DE GUIÓN 6.0 — Vive tu carrera
+# FUERA DE GUIÓN 7.0 — Fútbol en movimiento
 
 Simulador ficticio de carrera futbolística, gratuito y sin cuentas, ejecutable en un navegador moderno. Empiezas con tres ofertas de cantera de distintos países y puedes desarrollar tu trayectoria, entrenar, negociar, vivir la prensa y disputar temporadas. Los clubes pueden tener nombres reales; los calendarios, las noticias, las estadísticas y los fichajes son **ficticios**.
 
 ## Jugar
 
 **[Abrir juego en GitHub Pages](https://papimatcoding.github.io/football-player-career/)**. Como alternativa, publica esta carpeta en un servidor web estático (por ejemplo, `python -m http.server 8080`). El simulador no utiliza API externas.
+
+## Novedades 7.0 — Prioridad: simulación
+
+- Movimiento 2D basado en **líneas de formación, apoyo al balón, presión defensiva y posesiones enlazadas**, en lugar del movimiento aleatorio de los 22 jugadores de la versión 6. El campo continúa siendo una visualización estilizada, no un simulador físico ni táctico completo.
+- Trayectorias diferenciadas para los centros, córners, remates, balones bloqueados y paradas. Los goles muestran una señal visible y se conservan en la cronología.
+- **Cambio efectivo de campo al descanso**, incluidas las porterías y la dirección del ataque; el marcador mantiene el orden de local y visitante.
+- Si el protagonista empieza **suplente**, el modo predeterminado muestra los acontecimientos relevantes de forma acelerada. Puedes alternar con el partido completo desde el inicio. Al llegar la sustitución, la simulación **se detiene** con un aviso y, tras confirmar, aparece tu jugador con su dorsal y un distintivo en el campo.
+- Arreglada la pregunta de prensa que mostraba «1 goles» cuando el jugador había dado una asistencia. La entrevista usa los datos reales de la hoja de partido.
+- Protegida la recarga durante retransmisiones antiguas: el inicializador no dibuja con el motor equivocado antes de que cargue el módulo de compatibilidad.
+- Se mantiene el sistema de guardado y la clave **`fuera_de_guion_carrera_v4`** sin migraciones destructivas.
 
 ## Novedades 6.0
 
@@ -27,13 +37,14 @@ Simulador ficticio de carrera futbolística, gratuito y sin cuentas, ejecutable 
 | `assets/js/live-match.js` | Compatibilidad con retransmisiones empezadas en v5 |
 | `assets/js/match-v6.js` | Simulación deportiva basada en eventos, canvas, reloj y estadísticas |
 | `assets/js/world-v6.js` | Prensa contextual, noticias, ventanas de mercado |
+| `assets/js/match-v7.js` | Presentación táctica y espacial, sustituciones y cambios de campo; compatible con el motor anterior |
 | `assets/js/app.js` | Menú compacto, pantalla completa, scroll, compatibilidad |
-| `assets/css/*.css` | Estilos base, juego en directo y mejoras v6 |
+| `assets/css/*.css` | Estilos base, juego en directo y mejoras v6 y v7 |
 | `.github/workflows/pages.yml` | Despliegue de GitHub Pages desde `main` |
 
 ## Guardado y compatibilidad
 
-**No se reinicia el progreso al actualizar de v5 a v6.** La clave de almacenamiento continúa siendo `fuera_de_guion_carrera_v4` y el formato de datos sigue con `version:3`. Al abrir v6 por primera vez se conserva además una **instantánea previa a la actualización** en `fuera_de_guion_backup_antes_de_v6`. Una retransmisión ya iniciada en v5 puede completarse con su motor anterior antes de pasar a los partidos nuevos v6.
+**No se reinicia el progreso al actualizar de v5/v6 a v7.** La clave de almacenamiento continúa siendo `fuera_de_guion_carrera_v4` y el formato de datos sigue con `version:3`. Al abrir v6 por primera vez se conserva además una **instantánea previa a la actualización** en `fuera_de_guion_backup_antes_de_v6`. Una retransmisión ya iniciada en v5 puede completarse con su motor anterior antes de pasar a los partidos nuevos v6.
 
 Para mayor seguridad, usa **Ajustes → Exportar partida** para descargar una copia JSON antes de cambiar de navegador, borrar la caché o jugar en modo privado. El guardado local de un HTML abierto como archivo y el de GitHub Pages no son el mismo origen. Las partidas no se guardan en GitHub ni se envían a servidores.
 

@@ -1,0 +1,13 @@
+/* V7 — live match responsive improvements */
+.fdg7-status{display:flex;gap:14px;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.04em;margin:8px 0;color:#b6e5c3;font-weight:800;flex-wrap:wrap}
+.fdg7-status strong{color:#efffd9;padding:7px 12px;background:#174f38;border:1px solid #47805b;border-radius:8px}.fdg7-pulse{animation:fdg7-light 1s ease-in-out infinite alternate}
+@keyframes fdg7-light{from{background:#174f38}to{background:#758f26}}
+.fdg7-bench{margin:8px 0;border-radius:12px;border:1px solid #426d55;background:linear-gradient(125deg,#173b2d,#102e23);padding:18px;text-align:center;color:#e9ffe7}
+.fdg7-bench[hidden],.fdg7-entry[hidden],.fdg7-watch[hidden]{display:none!important}
+.fdg7-bench h3{font-size:21px;margin:10px 0}.fdg7-bench p{max-width:520px;margin:5px auto;color:#c5dacb;line-height:1.6;font-size:12px}
+.fdg7-only-events canvas,.fdg7-only-events .fdg-legend{display:none!important}.fdg7-only-events{min-height:160px}
+.fdg7-watch{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0}.fdg7-watch button{border:1px solid #528164;background:#214934;color:#d5ffe2;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer}.fdg7-watch button:hover{background:#336a4a}
+.fdg7-entry{position:relative;margin:8px 0;padding:22px;text-align:center;border:2px solid #d8e680;border-radius:14px;background:linear-gradient(110deg,#376448,#1e442c)}
+.fdg7-entry h3{font-size:25px;margin:10px 0}.fdg7-entry p{max-width:460px;margin:auto auto 15px;color:#e7f6dd}
+@media(max-width:650px){.fdg7-status{gap:5px;font-size:10px}.fdg7-watch button{flex:1}.fdg7-entry{padding:14px}.fdg7-bench{padding:12px}}
+@media(prefers-reduced-motion:reduce){.fdg7-pulse{animation:none}}
