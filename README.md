@@ -1,3 +1,13 @@
+## 9.0 — Campo revisado y previa de alineaciones (29 octubre 2026)
+
+- Nuevo presentador de posesiones continuas (`assets/js/match-v9.js`) sobre el registro estadístico de V6, sin reiniciar partidas ni cambiar la clave de guardado.
+- Dibujo del campo con medidas 105 × 68 m, áreas y círculo central escalados con la misma unidad.
+- Balón con interpolación continua entre jugadas; jugadores con desplazamiento limitado por fotograma y roles de apoyo, presión y desmarque.
+- Previa 4-3-3 con once titular por equipo, dorsales y nombres ficticios apropiados por país. Dorsal del protagonista persistente entre partidos (guardado en `S.player.v9Number`).
+- Modo banquillo con **solo goles y tarjetas**. Se respeta el parón del descanso y la entrada desde la banda.
+- Los nombres y las acciones del partido siguen siendo una representación simplificada, no un modelo físico real. Los nombres de los futbolistas son ficticios.
+- Las partidas guardadas durante un partido antiguo mantienen el presentador antiguo hasta la siguiente jornada.
+
 # FUERA DE GUIÓN 7.0 — Fútbol en movimiento
 
 Simulador ficticio de carrera futbolística, gratuito y sin cuentas, ejecutable en un navegador moderno. Empiezas con tres ofertas de cantera de distintos países y puedes desarrollar tu trayectoria, entrenar, negociar, vivir la prensa y disputar temporadas. Los clubes pueden tener nombres reales; los calendarios, las noticias, las estadísticas y los fichajes son **ficticios**.
