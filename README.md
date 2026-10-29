@@ -51,3 +51,33 @@ Para mayor seguridad, usa **Ajustes → Exportar partida** para descargar una co
 ## Limitaciones intencionadas
 
 El ritmo y las acciones en el campo constituyen una **visualización 2D aproximada**; las posiciones y movimientos no resuelven todas las leyes físicas ni un sistema táctico completo. El universo internacional se simula de forma ligera para que el juego funcione offline y en móviles. Las ventanas de mercado se aproximan por fase de temporada; las reglas reales de cada país no se replican exactamente.
+
+## Versión 8 — El campo tiene sentido
+
+La actualización 8 mejora únicamente el presentador visual de partidos. Conserva el
+motor de resultados y estadísticas, la estructura de temporadas y la misma clave
+`fuera_de_guion_carrera_v4` de localStorage. **No migra ni resetea partidas**.
+
+- Movimiento por demarcación: bloques defensivos, apoyos, presión cercana y
+  desmarques diferenciados; balón interpolado en circulación y remates.
+- Penalti: balón en el punto, portero en línea, lanzador preparado y los otros
+  jugadores fuera del área hasta el disparo.
+- Libre directo: barrera de cuatro jugadores entre lanzador y portería.
+- Libre indirecto: ejecución hacia un compañero; se mantiene el recuento real.
+- Córner: balón en la esquina correcta, ejecutor junto al banderín, jugadores
+  distribuidos en el área y un segundo toque cuando termina en remate.
+- Fuera de juego: se conserva la referencia visual de la línea.
+- Se mantiene el cambio de campo al descanso, el seguimiento de suplentes y
+  las pausas del simulador anterior.
+- Se ha incluido un pequeño indicador de la acción a balón parado en la vista.
+
+El campo sigue siendo un **presentador 2D estilizado**, no un motor físico de
+fútbol. Las decisiones del árbitro y las estadísticas proceden de los eventos
+simulados y no de colisiones de un sistema de físicas. Las novedades de esta
+versión afectan a los encuentros que empiezan después de actualizar: una
+retransmisión V7 previamente guardada continúa con su presentador original y
+se actualiza en el siguiente partido, para proteger su estado.
+
+Pruebas: continuidad de partido con resultado y estadísticas coherentes,
+configuración visual de balón parado para ambos equipos, segunda parte,
+partida guardada V7 y navegador móvil sin desbordamiento horizontal.

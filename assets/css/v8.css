@@ -1,0 +1,5 @@
+/* v8 match presentation: a small broadcast label, not an intrusive overlay. */
+.fdg8-pitch-area{position:relative}.fdg8-action{position:absolute;top:12px;left:12px;z-index:2;pointer-events:none;letter-spacing:.07em;font-size:10px;font-weight:900;color:#eeffe5;padding:7px 11px;background:#0b2c23db;border:1px solid #7baf83a8;border-radius:7px;text-shadow:0 1px 2px #0009}
+.fdg8-action[data-kind="penalty"],.fdg8-action[data-kind="direct"],.fdg8-action[data-kind="corner"]{background:#685024ed;border-color:#ecdb8e;color:#fff7d5}
+.fdg8-action[data-kind="offside"]{background:#6a5523ed;color:#ffe6ac}
+@media(max-width:650px){.fdg8-action{top:7px;left:7px;padding:5px 8px;font-size:9px}}
