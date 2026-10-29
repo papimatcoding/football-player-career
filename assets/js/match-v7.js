@@ -122,6 +122,9 @@ function fdg7Enter(){
  const m=S.match,l=m.live;
  if(l.v7SubShown||m.enter<0||m.enter===0)return;
  l.v7SubShown=true;l.v7SubPause=true;l.paused=true;l.v7Following='field';
+ // Once you step on, return to normal live speed instead of staying at the
+ // accelerated bench-mode pace.
+ l.mode='full';l.speed=1;
  l.v7Banner={type:'sub',label:`ENTRAS AL CAMPO · ${m.enter}'`,until:Infinity};
  const z=l.players[fdgHeroIndex()];
  if(z){z.n=l.v7HeroNumber;z.x=fdg6HomeX(0,49);z.y=99;z.tx=z.x;z.ty=78;}
