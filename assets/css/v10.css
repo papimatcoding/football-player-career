@@ -1,0 +1,14 @@
+/* V10: canvas and its internal drawing use the same aspect ratio. */
+.fdg6-page .fdg-canvas-wrap canvas,.fdg8-pitch-area canvas,.fdg7-pitch-area canvas,#fdg-pitch{display:block!important;width:100%!important;max-height:none!important;height:auto!important;aspect-ratio:980/670!important;object-fit:contain!important;}
+.fdg7-only-events #fdg-pitch{display:none!important}
+.fdg10-flag{font-size:17px;line-height:1.2;flex:0 0 22px;text-align:center}
+.fdg9-roster-row.hero{border-left:3px solid #fff19a;background:#294d34}
+.hero:after{content:var(--hero-shirt, "")!important}
+@media(max-width:730px){.fdg9-rosters{grid-template-columns:1fr}.fdg10-flag{font-size:15px}}
+.fdg10-mode-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 4px;color:#9dbcae;font-size:11px}
+.fdg10-text-story{display:none;min-height:280px;max-height:470px;overflow-y:auto;background:#102d23;padding:14px;border:1px solid #456650;border-radius:11px}
+.fdg10-text-mode #fdg-pitch{display:none!important}
+.fdg10-text-mode .fdg10-text-story{display:grid;gap:6px}
+.fdg10-story-row{display:flex;align-items:start;gap:14px;padding:11px;border-bottom:1px solid #ffffff19;line-height:1.45;font-size:12px}
+.fdg10-story-row strong{color:#dcf4a3;min-width:32px}
+.fdg10-empty{color:#a4c6b4;padding:30px;text-align:center}

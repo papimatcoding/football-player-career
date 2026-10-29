@@ -298,7 +298,7 @@ fdg6PressPrepare=function(){
  fdg7OldPress();const r=S?.lastResult,p=S?.pressV6;if(!r||!p||p.answered)return;
  if(p.type==='assist'){
   const count=Math.max(0,r.assists||0);
-  p.question=count===1?`Has dado una asistencia contra ${r.opp}. ¿Cómo viste la jugada y qué fue lo más importante para crear esa ocasión?`:`Has dado ${count} asistencias contra ${r.opp}. ¿Cómo has encontrado los espacios para ayudar a tus compañeros?`;
+  p.question=count===1?`Tu pase acabó en un gol ante ${r.opp}. ¿Qué viste antes de dar la asistencia?`:`Has dado ${count} asistencias contra ${r.opp}. ¿Cómo has encontrado los espacios para ayudar a tus compañeros?`;
   if(r.us<r.them)p.question+=` Aun así, el equipo ha perdido ${r.us}-${r.them}.`;
  }else if(p.type==='goal'){
   const n=r.goals||0;p.question=`${n===1?'Has marcado un gol':`Has marcado ${n} goles`} ante ${r.opp}. ${r.us>r.them?'¿Cómo valoras tu contribución a la victoria?':'¿Qué significa para ti después de este resultado?'}`;

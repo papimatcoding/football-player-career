@@ -91,3 +91,23 @@ se actualiza en el siguiente partido, para proteger su estado.
 Pruebas: continuidad de partido con resultado y estadísticas coherentes,
 configuración visual de balón parado para ambos equipos, segunda parte,
 partida guardada V7 y navegador móvil sin desbordamiento horizontal.
+
+## Versión 10 — Actas fiables y retransmisión legible
+
+La versión 10 cambia la generación de los encuentros **nuevos**: construye cadenas de posesión de eventos espaciales enlazados (`from`/`to`), que sirven tanto para el marcador como para el dibujo. Los partidos ya iniciados en versiones anteriores conservan su motor original hasta concluirlos. La clave de almacenamiento, el formato básico de carrera y las estadísticas acumuladas no se eliminan.
+
+**Correcciones:**
+- Un penalti o una falta directa convertidos no pueden acreditar una asistencia. Las contribuciones individuales de V10 proceden de campos concretos (`scorerHero`/`assistHero`) del remate y su pase anterior.
+- Campo y futbolistas usan proporciones idénticas en Canvas y CSS; los jugadores son círculos.
+- Un pase durante el juego toma su punto de partida de la posición final del evento anterior. Las reanudaciones llevan una fase explícita de preparación.
+- Inicio y segunda parte incluyen saque de centro; continúa la pausa de descanso.
+- Al iniciar partidos se generan plantillas ficticias con banderas, nacionalidades locales y extranjeras, y menor repetición de nombres de pila.
+- La dorsal de tu héroe se usa de manera estable; la camiseta del titular al que sustituyes no puede duplicarla.
+- Las respuestas de prensa tras una asistencia describen decisiones de pase, no afirmaciones genéricas sobre tu calidad.
+- El botón **Solo narración** permite continuar con marcador, estadísticas y eventos destacados si la visualización 2D no convence. No cambia el resultado.
+
+**Límites declarados:** esto todavía no es un motor de física multijugador con decisiones tomadas por agentes autónomos. Es una representación táctica simplificada de eventos enlazados. No debe confundirse con una retransmisión real ni con un juego de fútbol de control directo.
+
+**QA local (Chromium, octubre de 2026):** carrera creada y continuada, alineaciones de ambos equipos, titular y suplente, alternancia entre 2D y texto, descanso y reanudación, partido completo con acta final; en una muestra de 300 simulaciones los goles promediaron alrededor de 2,5 y no se detectaron asistencias a penaltis, ni saltos entre extremos consecutivos de acciones del mismo equipo sin reanudación. El resultado varía por semilla.
+
+Para próximos avances, aislar el simulador de eventos de la interfaz y añadir pruebas automatizadas de posesión, arbitraje y anotación para evitar regresiones.

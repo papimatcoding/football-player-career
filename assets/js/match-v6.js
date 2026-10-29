@@ -131,10 +131,15 @@ function fdg6Apply(e){
   if(e.result==='goal'){
     our.goals++;if(own)m.scoreUs++;else m.scoreThem++;
     let heroCredit='';
-    if(hero&&p.pos!=='POR'){
+    // Event-owned credits: penalties and direct free kicks NEVER create assists.
+    // V10 attaches the actual scorer and assister to the preceding action.
+    if(e.v10){
+      if(own&&p.pos!=='POR'&&e.scorerHero===true){m.stats.goals++;heroCredit=`${p.name} marca. `;}
+      else if(own&&p.pos!=='POR'&&e.assistHero===true&&e.kind==='shot'){m.stats.assists++;heroCredit=`Asistencia de ${p.name}. `;}
+    }else if(hero&&p.pos!=='POR'){
       if(Math.random()<.58&&['DC','EI','ED','MCO'].includes(p.pos)){m.stats.goals++;heroCredit=`${p.name} marca. `;}
-      else if(Math.random()<.48){m.stats.assists++;heroCredit=`Asistencia de ${p.name}. `;}
-    }else if(own&&fdg6HeroLive(e.t)&&Math.random()<.14&&p.pos!=='POR'){m.stats.assists++;heroCredit=`Asistencia de ${p.name}. `;}
+      else if(!['penalty','direct'].includes(e.kind)&&Math.random()<.48){m.stats.assists++;heroCredit=`Asistencia de ${p.name}. `;}
+    }else if(own&&fdg6HeroLive(e.t)&&!['penalty','direct'].includes(e.kind)&&Math.random()<.14&&p.pos!=='POR'){m.stats.assists++;heroCredit=`Asistencia de ${p.name}. `;}
     fdg6Feed(e,`¡¡GOOOL DE ${name.toUpperCase()}!! ${heroCredit}${e.kind==='penalty'?'Transforma el penalti.':e.kind==='direct'?'El lanzamiento directo entra en la portería.':'El balón termina dentro de la red.'}`,'goal');
     FDG6.slowUntil=performance.now()+1700;l.goalFlashUntil=performance.now()+1600;l.lastGoalTeam=name;
   }else if(e.result==='saved'){

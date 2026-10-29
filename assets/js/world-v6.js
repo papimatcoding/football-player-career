@@ -16,7 +16,7 @@ const FDG6_MEDIA={
 };
 const FDG6_QUESTIONS={
  goal:{q:'Has marcado {goals} {noun} contra {rival}. ¿Qué significa para ti después de este resultado?',a:[['Lo más importante es ayudar al equipo a ganar.',{chemistry:4,trust:3,rep:1},'Pones al equipo por delante de las cifras.'],['Es un premio al trabajo en los entrenamientos.',{focus:4,trust:2},'Tu dedicación ocupa los titulares.'],['Quiero ser decisivo cada semana.',{rep:5,focus:-2,trust:-1},'La ambición aumenta la atención sobre ti.']]},
- assist:{q:'Has dado {assists} {noun} frente a {rival}. ¿Te sientes más cómodo en este sistema?',a:[['El juego colectivo nos hace mejores.',{chemistry:4,trust:2},'Tu respuesta agrada al vestuario.'],['He trabajado mucho la visión y el último pase.',{focus:4,rep:2},'Destacas tu evolución técnica.'],['Tengo calidad para asumir más responsabilidad.',{rep:4,trust:-2},'Los periodistas especulan con tu protagonismo.']]},
+ assist:{q:'Has dado el pase decisivo en uno de los goles contra {rival}. ¿Cómo viste esa jugada?',a:[['Vi el desmarque de mi compañero y le puse el balón donde lo necesitaba.',{chemistry:4,trust:2},'Destacas la coordinación con el rematador.'],['Pude levantar la cabeza a tiempo; elegir bien el pase fue lo más importante.',{focus:4,rep:2},'Analizas tu decisión sobre el césped.'],['Es una combinación que hemos repetido en los entrenamientos.',{trust:4,chemistry:2},'Reconoces la preparación táctica del cuerpo técnico.']]},
  debut:{q:'Acabas de disputar tus primeros minutos con {club}. ¿Cómo has vivido el debut?',a:[['Es un sueño, pero tengo que seguir aprendiendo.',{trust:4,morale:5},'La afición valora tu humildad.'],['Quiero más oportunidades para demostrar mi nivel.',{rep:3,focus:2,trust:-1},'Tu ambición llama la atención.'],['Gracias al club y a mis compañeros.',{chemistry:5,morale:3},'Una respuesta que refuerza el vestuario.']]},
  great:{q:'Tu nota de {rating} ha sido una de las mejores del encuentro ante {rival}. ¿Es tu momento?',a:[['He tenido un buen día gracias a mis compañeros.',{chemistry:5,trust:2},'El equipo respalda tu discurso.'],['Estoy encontrando mi mejor nivel.',{morale:4,rep:3},'Tu confianza se contagia a la grada.'],['Llevo semanas trabajando para llegar a esto.',{focus:5,rep:2},'Explicas tu progreso sin exageraciones.']]},
  poor:{q:'La actuación ante {rival} no ha sido buena. ¿Qué crees que ha fallado?',a:[['Me hago responsable; corregiré mis errores.',{trust:4,focus:5,morale:-1},'Tu autocrítica evita polémicas.'],['Es un mal día y hay que mirar adelante.',{morale:3,focus:2},'Tratas de pasar página.'],['El sistema no me ayudó demasiado.',{rep:2,trust:-6,chemistry:-3},'Tus palabras incomodan al entrenador.']]},
@@ -56,7 +56,7 @@ function fdg6PressPrepare(){
  const type=what&&Math.random()<chance?what:null;
  if(!type){S.pressV6={key,type:null,answered:true};return;}
  const [media,lang]=fdg6Media(),source=FDG6_QUESTIONS[type];
- const params={rival:r.opp,club:S.club.name,goals:r.goals,noun:r.goals===1?'gol':'goles',assists:r.assists,saves:r.save,us:r.us,them:r.them,rating:r.rating.toFixed(1)};
+ const params={rival:r.opp,club:S.club.name,goals:r.goals,noun:r.goals===1?'gol':'goles',assists:r.assists,assistNoun:r.assists===1?'asistencia':'asistencias',saves:r.save,us:r.us,them:r.them,rating:r.rating.toFixed(1)};
  const question=source.q.replace(/\{(\w+)\}/g,(_,x)=>String(params[x]??''));
  S.pressV6={key,type,media,lang,question,choices:source.a,answered:false};persist();
 }
