@@ -197,6 +197,7 @@ v4MatchScreen=function(){const m=S?.match;let html=fdg9OldScreen();if(!m)return 
  if(!fdg9Current())return html;
  html=html.replace(/SIMULADOR 8\.0/g,'SIMULADOR 9.0').replace('<div id="fdg7-bench-line">Los dos equipos están compitiendo.</div>','<div id="fdg7-bench-line">'+fdg9BenchScreen()+'</div>');
  html=html.replace('Mientras esperas ves las ocasiones y el marcador.','Mientras esperas, solo se muestran los goles y las tarjetas.');
+ if(m.enter<0)html=html.replace('Te preparas para entrar','Retransmisión del equipo').replace('Cuando el entrenador te llame, el partido se detendrá para mostrar tu entrada al campo.','Tu futbolista no participará hoy.');
  html=html.replace('Simulación de fútbol con jugadores, números, pelota y acciones','Campo táctico con balón continuo, jugadores y dorsales estables');
  return html;
 };
@@ -204,7 +205,11 @@ const fdg9OldSync=fdg6Sync;
 fdg6Sync=function(force){fdg9OldSync(force);if(!fdg9Current())return;let l=S.match.live;
  let holder=document.getElementById('fdg7-bench-line');if(holder){const v=fdg9BenchScreen();if(holder.innerHTML!==v)holder.innerHTML=v;}
  let role=document.getElementById('fdg7-role');if(role&&S.match.enter>0&&l.clock<S.match.enter)role.textContent=`BANQUILLO · Nº ${fdg9HeroNumber()} · ENTRAS ${S.match.enter}'`;
- if(S.match.enter>0&&!l.v7SubShown&&l.v7Following==='bench'){let f=document.getElementById('fdg-feed');if(f)f.innerHTML=fdg9BenchFeed(l);}
+ const observing=(S.match.enter<0||S.match.enter>0&&!l.v7SubShown)&&l.v7Following==='bench';
+ let pitch=document.getElementById('fdg7-pitch-area'),bench=document.getElementById('fdg7-bench');
+ if(pitch)pitch.classList.toggle('fdg7-only-events',observing);if(bench)bench.hidden=!observing;
+ let watching=document.getElementById('fdg7-watch-controls');if(watching&&S.match.enter<0)watching.hidden=false;
+ if(observing){let f=document.getElementById('fdg-feed');if(f)f.innerHTML=fdg9BenchFeed(l);}
  let event=document.getElementById('fdg8-action');if(event){let scene=fdg9Pose(l),e=scene.event;event.textContent=scene.stage==='setup'?'PREPARANDO · '+(FDG8_LABEL[e.kind]||'REANUDACIÓN'):scene.stage==='execute'?(FDG8_LABEL[e?.kind]||'JUGADA'):'POSESIÓN · '+(scene.side===0?'TU EQUIPO':'RIVAL');}
 };
 const fdg9OldApply=fdg6Apply;
@@ -231,7 +236,7 @@ fdg6Apply=function(e){
 const fdg9OldPlay=window.Game.playMatch;
 window.Game.playMatch=function(){const m=S?.match;if(!m||m.started)return fdg9OldPlay();fdg9HeroNumber();fdg9OldPlay();const l=S?.match?.live;if(!l||l.engine!==6||l.presentation!==7)return;
  l.v9=true;l.v9Version='continuous-possession';l.v7HeroNumber=fdg9HeroNumber();l.mode='full';l.speed=1;
- if(m.enter>0)l.v7Following='bench';fdg9SetNumbers(l);persist();render();fdg6Resume();};
+ if(m.enter!==0){l.v7Following='bench';if(m.enter<0)l.mode='highlights';}fdg9SetNumbers(l);persist();render();fdg6Resume();};
 // During existing V7/V8 saves, retain the original renderer until the next fixture.
 if(fdg9Current()&&S?.view==='match'){render();fdg6Resume();}
 window.FDG9={pose:fdg9Pose,formation:fdg9Formation,drawPitch:fdg9DrawPitch,heroNumber:fdg9HeroNumber,rosters:fdg9LineupData,version:9};
