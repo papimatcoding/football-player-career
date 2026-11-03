@@ -27,13 +27,19 @@ try{
  await page.waitForSelector('#fdg11-rating-ring');
  const liveUI=await page.evaluate(()=>{
   const stage=document.getElementById('fdg11-pitch-stage'),canvas=document.getElementById('fdg11-pitch');
+  const hud=document.querySelector('.fdg11-performance'),hudStrip=document.querySelector('.fdg11-hud-strip');
+  const field=stage?.getBoundingClientRect(),hudRect=hud?.getBoundingClientRect();
   return {rating:document.getElementById('fdg11-rating-value')?.textContent,
+   hudOutsidePitch:!stage?.contains(hud)&&Boolean(hudStrip?.contains(hud)),
+   hudSeparated:!!hudRect&&!!field&&hudRect.bottom<=field.top+1,
    benchHidden:document.getElementById('fdg11-bench-feed')?.hidden,
    statsHidden:document.getElementById('fdg11-overlay')?.hidden,
    canvasW:canvas?.getBoundingClientRect().width,canvasH:canvas?.getBoundingClientRect().height,
    stageW:stage?.getBoundingClientRect().width,
    viewport:document.documentElement.clientWidth};
  });
+ assert.equal(liveUI.hudOutsidePitch,true,'player metrics must live outside the pitch DOM');
+ assert.equal(liveUI.hudSeparated,true,'player rating must not cover the field visually');
  assert.equal(liveUI.benchHidden,true,'live player should not see redundant commentary');
  assert.equal(liveUI.statsHidden,true,'team stats must not be visible during active play');
  assert.ok(liveUI.canvasW<=liveUI.viewport,'pitch must fit screen width');
@@ -83,9 +89,12 @@ try{
   'bench player should not receive a fictional rating');
  const mobile=await page.evaluate(()=>{
   const c=document.getElementById('fdg11-pitch').getBoundingClientRect();
+  const hud=document.querySelector('.fdg11-performance')?.getBoundingClientRect();
   return {left:c.left,right:c.right,height:c.height,viewport:innerWidth,
+   hudBelowTop:!!hud&&hud.bottom<=c.top+1,
    scrollWidth:document.documentElement.scrollWidth};
  });
+ assert.equal(mobile.hudBelowTop,true,'mobile HUD must not cover playing surface');
  assert.ok(mobile.left>=-1&&mobile.right<=mobile.viewport+1,
   'mobile pitch must fit screen: '+JSON.stringify(mobile));
  assert.ok(mobile.scrollWidth<=mobile.viewport+2,
