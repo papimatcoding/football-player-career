@@ -41,3 +41,84 @@
 @media(max-width:600px){.fdg11-archetypes-heading{align-items:flex-start;flex-direction:column}
  .fdg11-archetype-choices{grid-template-columns:1fr}
  .fdg11-archetype-option{min-height:unset}}
+
+
+/* Football Life 11.3 — playing field and spectator HUD */
+.fdg11-page{max-width:none;width:100%;min-width:0}
+.fdg11-stadium{min-width:0;padding:12px!important}
+.fdg11-pitch-layout{display:flex;justify-content:center;min-width:0;overflow:hidden}
+.fdg11-page.fdg6-page .fdg11-canvas{
+ box-sizing:border-box;position:relative;width:min(100%,96dvh);aspect-ratio:105 / 68;
+ padding:0;min-width:0;min-height:0;height:auto;max-height:none;
+ border:1px solid #3b766a;background:#09392e;border-radius:12px;overflow:hidden;
+}
+.fdg11-page.fdg6-page .fdg11-canvas canvas{
+ display:block!important;width:100%!important;height:100%!important;
+ min-height:0!important;max-height:none!important;
+ aspect-ratio:105 / 68!important;object-fit:fill!important;
+ border-radius:0!important;
+}
+.fdg11-page .fdg11-scoreboard{padding:2px 0 7px;gap:8px}
+.fdg11-page .fdg-timebar{padding-bottom:8px}
+.fdg11-page .fdg11-scoreboard b{font-size:clamp(20px,3vw,32px)}
+.fdg11-page .fdg11-controls{justify-content:center;margin-top:9px;gap:7px}
+.fdg11-page .fdg11-controls[hidden],.fdg11-bench-feed[hidden]{display:none!important}
+.fdg11-performance{
+ position:absolute;top:12px;right:12px;z-index:3;display:flex;align-items:center;gap:9px;
+ max-width:min(310px,48%);padding:7px 9px 7px 7px;border-radius:14px;
+ background:#071b29e8;border:1px solid #b9e7e15e;box-shadow:0 7px 23px #00121b80;
+ color:#f7fffc;pointer-events:none;backdrop-filter:blur(8px);
+}
+.fdg11-rating-ring{
+ --rating-progress:0%;position:relative;flex-shrink:0;width:59px;height:59px;
+ display:grid;place-items:center;border-radius:50%;
+ background:conic-gradient(#9df3be var(--rating-progress),#38566b 0);
+ box-shadow:inset 0 0 0 1px #b3e1c24d;
+}
+.fdg11-rating-ring::before{content:'';position:absolute;inset:5px;border-radius:50%;background:#0b2031}
+.fdg11-rating-ring span{position:relative;z-index:1;font-size:19px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.fdg11-performance-text{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.2}
+.fdg11-performance-text small{font-size:9px;letter-spacing:1.1px;font-weight:850;color:#9defc1}
+.fdg11-performance-text b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fdg11-performance-text span{font-size:10px;line-height:1.45;color:#cfdfed}
+.fdg11-overlay:not([hidden]){
+ position:fixed;inset:0;z-index:160;display:flex;align-items:center;
+ justify-content:center;background:#051221f2;padding:16px 10px;
+ overflow-y:auto;overscroll-behavior:contain;
+}
+.fdg11-modal{width:min(100%,600px);max-height:min(95dvh,860px);overflow:auto;display:flex;flex-direction:column;
+ gap:10px;text-align:center;padding:18px 22px;border:1px solid #406c80;border-radius:18px;
+ background:linear-gradient(145deg,#1c3547,#122335);box-shadow:0 22px 70px #02070bcf}
+.fdg11-modal-kicker{font-size:11px!important;letter-spacing:1.6px;font-weight:900;color:#a2f4c7!important;margin:0!important}
+.fdg11-modal h2{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;
+ font-size:clamp(16px,3vw,22px);margin:0 0 4px}
+.fdg11-modal h2 em{font-style:normal;color:#9df3be;font-size:clamp(24px,5vw,34px);white-space:nowrap}
+.fdg11-break-stats{display:grid;gap:0;text-align:center}
+.fdg11-stats-title,.fdg11-stats-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,1.15fr) minmax(0,1fr);
+ gap:8px;align-items:center;padding:7px 5px}
+.fdg11-stats-title{padding:10px 5px;font-size:12px;overflow-wrap:anywhere}
+.fdg11-stats-title span{font-size:10px;letter-spacing:1.1px;color:#a4bfcb}
+.fdg11-stats-row{border-top:1px solid #b1dbed1a}
+.fdg11-stats-row strong{font-variant-numeric:tabular-nums;font-size:14px}
+.fdg11-stats-row span{color:#bfcee1;font-size:12px}
+.fdg11-overlay-action{min-height:47px;width:100%;margin-top:7px!important;font-size:15px;font-weight:800;flex-shrink:0;cursor:pointer}
+.fdg11-bench-feed{margin-top:2px}
+.fdg11-bench-feed p{margin:5px 0 12px}
+@media(max-width:760px){
+ .fdg11-page.fdg6-page .fdg11-canvas{width:100%;max-width:100%;aspect-ratio:105/68}
+ .fdg11-performance{top:7px;right:7px;gap:6px;padding:5px;max-width:56%;border-radius:9px}
+ .fdg11-rating-ring{width:39px;height:39px}
+ .fdg11-rating-ring::before{inset:4px}
+ .fdg11-rating-ring span{font-size:14px}
+ .fdg11-performance-text small{font-size:7px;letter-spacing:.4px}
+ .fdg11-performance-text b{font-size:10px}
+ .fdg11-performance-text span{font-size:8px;line-height:1.25}
+ .fdg11-page .fdg11-controls{flex-direction:row;flex-wrap:wrap}
+ .fdg11-page .fdg11-controls button{font-size:11px;padding:8px}
+ .fdg11-modal{padding:14px 12px;gap:7px}
+ .fdg11-stats-row{padding:6px 2px}
+}
+@media(max-height:650px) and (min-width:761px){
+ .fdg11-page.fdg6-page .fdg11-canvas{width:min(100%,85dvh)}
+ .fdg11-modal{max-height:95dvh}
+}
