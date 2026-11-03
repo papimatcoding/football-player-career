@@ -268,14 +268,15 @@
   if(first)first.insertAdjacentElement('afterend',band);
  }
  function draftIntro(){
-  if(!S||S.view!=='draft')return;
+  if(S&&S.view!=='draft')return;
   const hero=document.querySelector('.setuphero');if(!hero)return;
   hero.classList.add('fls-v3-draft-hero');
   hero.insertBefore(node('span','fls-v3-eyebrow','EDICIÓN 001 / EL PRIMER CONTRATO'),hero.firstChild);
  }
  function decorate(){
+  draftIntro();
   if(!S)return;
-  clubAccent();topIdentity();homepage();playerFile();transferDesk();newsroom();seasonChapter();postReport();draftIntro();
+  clubAccent();topIdentity();homepage();playerFile();transferDesk();newsroom();seasonChapter();postReport();
  }
  const previous=render;
  render=function(){const result=previous.apply(this,arguments);try{decorate();}catch(error){console.warn('FLS Personality layer:',error);}return result;};
