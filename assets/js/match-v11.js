@@ -323,30 +323,50 @@ function screen(){
  const S=api.state(),m=current();if(!m)return '';
  const l=m.live,home=m.home?S.club.name:m.opp,away=m.home?m.opp:S.club.name;
  return `<div class="fdg-live-page fdg6-page fdg11-page">
-  <div class="v4-viewhead fdg-live-heading"><div><span class="v4-kicker">JORNADA ${S.round+1} · MOTOR MATCHLAB 0.5.8</span>
-  <h1>${escapeHTML(home)} — ${escapeHTML(away)}</h1>
-  <p>Partido 2D completo · 2 minutos por parte · Fútbol simulado en tiempo real</p></div></div>
-  <section class="v4-panel fdg-live-stadium">
-    <div class="fdg11-scoreboard"><strong>${escapeHTML(home)}</strong><b id="fdg11-score">0 : 0</b><strong>${escapeHTML(away)}</strong></div>
-    <div class="fdg-timebar"><b id="fdg11-clock">0'</b><div class="fdg-progress"><span id="fdg11-progress"></span></div><small id="fdg11-stage">PRIMERA PARTE</small></div>
-    <div class="fdg-canvas-wrap fdg11-canvas"><canvas id="fdg11-pitch" width="900" height="590" aria-label="Partido físico en 2D con jugadores y balón" role="img"></canvas>
-    <div class="fdg11-overlay" id="fdg11-overlay" hidden></div></div>
-    <p class="fdg11-statline" id="fdg11-stats"></p>
-    <div class="fdg-controlbar">
-      <button class="tinybtn" id="fdg11-pause" onclick="Game.livePause()">Ⅱ Pausar</button>
-      <button class="tinybtn" onclick="Game.liveSpeed(1)">1×</button>
-      <button class="tinybtn" onclick="Game.liveSpeed(2)">2×</button>
-      <button class="tinybtn" onclick="Game.liveSpeed(4)">4×</button>
-      <button class="tinybtn" onclick="Game.liveSkip()">${l.mode==='highlights'?'Ver todo':'Momentos importantes'}</button>
+  <section class="v4-panel fdg-live-stadium fdg11-stadium">
+   <div class="fdg11-scoreboard"><strong>${escapeHTML(home)}</strong><b id="fdg11-score">0 : 0</b><strong>${escapeHTML(away)}</strong></div>
+   <div class="fdg-timebar"><b id="fdg11-clock">0'</b><div class="fdg-progress"><span id="fdg11-progress"></span></div><small id="fdg11-stage">PRIMERA PARTE</small></div>
+   <div class="fdg11-pitch-layout">
+    <div class="fdg-canvas-wrap fdg11-canvas" id="fdg11-pitch-stage">
+     <canvas id="fdg11-pitch" width="900" height="583" aria-label="Partido táctico 2D" role="img"></canvas>
+     <div class="fdg11-performance" role="group" aria-label="Valoración y estadísticas de tu futbolista">
+      <div class="fdg11-rating-ring" id="fdg11-rating-ring" style="--rating-progress:0%"><span id="fdg11-rating-value">—</span></div>
+      <div class="fdg11-performance-text"><small id="fdg11-hero-status">EN EL CAMPO</small>
+       <b>${escapeHTML(S.player.name)}</b><span id="fdg11-hero">0 goles · 0 asistencias</span></div>
+     </div>
+     <div class="fdg11-overlay" id="fdg11-overlay" hidden></div>
     </div>
-    <p class="fdg11-heroline" id="fdg11-hero"></p>
-    <p class="fdg11-error" id="fdg11-errors" hidden></p>
+   </div>
+   <div class="fdg-controlbar fdg11-controls" id="fdg11-controls">
+    <button type="button" class="tinybtn" id="fdg11-pause" onclick="Game.livePause()">Ⅱ Pausar</button>
+    <button type="button" class="tinybtn" onclick="Game.liveSpeed(1)">1×</button>
+    <button type="button" class="tinybtn" onclick="Game.liveSpeed(2)">2×</button>
+    <button type="button" class="tinybtn" onclick="Game.liveSpeed(4)">4×</button>
+    <button type="button" class="tinybtn" onclick="Game.liveSkip()">Momentos importantes</button>
+   </div>
+   <p class="fdg11-error" id="fdg11-errors" hidden></p>
   </section>
-  <section class="v4-panel"><h3>Acciones del encuentro</h3><div class="fdg11-events" id="fdg11-events"></div></section>
+  <section class="v4-panel fdg11-bench-feed" id="fdg11-bench-feed" hidden>
+   <h3>Retransmisión desde el banquillo</h3>
+   <p>Mientras esperas tu oportunidad, sigue las jugadas destacadas de tus compañeros.</p>
+   <div class="fdg11-events" id="fdg11-events"></div>
+  </section>
  </div>`;
 }
+function bindControls(){
+ const overlay=document.getElementById('fdg11-overlay');
+ if(!overlay||overlay.dataset.bound==='yes')return;
+ overlay.dataset.bound='yes';
+ overlay.addEventListener('click',event=>{
+  const button=event.target.closest('[data-match-action]');
+  if(!button)return;
+  if(button.dataset.matchAction==='continue')continueHalf();
+  if(button.dataset.matchAction==='close')close();
+ });
+}
+
 export function installFDG11(career){
  api=career;
- return {start,restore:resume,screen,afterRender:()=>{if(current()){paint();refreshUI();resume();}},
+ return {start,restore:resume,screen,afterRender:()=>{if(current()){bindControls();paint();refreshUI();resume();}},
   pause,speed,skip,continueHalf,close,resume};
 }
