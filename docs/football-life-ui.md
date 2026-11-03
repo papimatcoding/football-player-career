@@ -38,3 +38,22 @@ La clave **`fuera_de_guion_carrera_v4`** se mantiene deliberadamente para conser
 - Mejorar la maquetación específica de perfil y progresión, vinculando desbloqueos a sistemas de juego reales (no botones ficticios).
 - Incorporar escudos y banderas en tablas, mercado e historial, y normalizar un catálogo de assets local/cacheable.
 - Integrar MatchLab mediante un adaptador con pruebas de resultados y persistencia; esta PR no realiza esa integración.
+
+
+## UI V2 · Escudos prioritarios (3 noviembre 2026)
+
+Esta segunda fase amplía el diseño aprobado de Canva a las pantallas de cantera, perfil, mercado, clasificación, historial y retransmisión en directo. Se mantienen todos los estados, botones y datos del motor antiguo: el parche solo decora el DOM después del render.
+
+- **Catálogo contrastado:** `assets/js/fls-crest-catalog.js` asigna archivos SVG existentes a **438 de los 482 clubes profesionales** de `LEAGUES` (**90,9 %**). Es un mapa de rutas verificadas, no una estimación por similitud de nombres.
+- **Canteras Sub-19:** reutilizan el escudo del club matriz; el nombre del equipo juvenil sigue siendo distinto en calendarios y resultados.
+- **Clubes sin SVG disponible:** se sustituyen por iniciales; nunca se muestra un escudo de otro equipo como solución automática.
+- **Cantera:** tres propuestas con escudos y banderas; `Game.join` se conserva.
+- **Liga:** escudos discretos en cada fila, también para las ligas juveniles.
+- **Ojeadores y mercado:** identidad visual de cada club, respetando requisitos, selección de oferta y contratos del motor.
+- **Trayectoria:** escudos históricos, conservando temporadas y estadísticas.
+- **Partido:** escudos en la previa y en la retransmisión 2D real; no se sustituye ni altera el motor de partido.
+- **Perfil:** composición limpia con la nacionalidad del jugador diferenciada del país del club.
+
+**Limitaciones intencionadas:** SVG alojados remotamente; sin conexión se muestra la reserva de iniciales. No se ha implementado descarga/localización masiva de los assets, por lo que disponer de los recursos no es un requisito para seguir jugando. Algunos clubes están pendientes de verificar.
+
+**Pruebas:** `tests/fls-ui-smoke.mjs`, ejecutado en Chromium por el workflow `fls-ui.yml`. Comprobar siempre los flujos desde creación y reanudación de carrera; además de marcas, crestas de cantera, tablas, ojeadores, retransmisión y vista móvil.
