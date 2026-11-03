@@ -76,8 +76,11 @@ try{
  assert.ok(end.roleLevel>=1);
  // Separate mobile stadium smoke test does not modify the already-finished save.
  await page.setViewportSize({width:375,height:812});
- await page.evaluate(()=>{startMatch();S.match.enter=0;persist();render();Game.playMatch();});
+ await page.evaluate(()=>{startMatch();S.match.enter=65;persist();render();Game.playMatch();});
  await page.waitForSelector('#fdg11-pitch');
+ await page.waitForFunction(()=>document.getElementById('fdg11-bench-feed')?.hidden===false,{timeout:5000});
+ assert.equal(await page.locator('#fdg11-rating-value').textContent(),'—',
+  'bench player should not receive a fictional rating');
  const mobile=await page.evaluate(()=>{
   const c=document.getElementById('fdg11-pitch').getBoundingClientRect();
   return {left:c.left,right:c.right,height:c.height,viewport:innerWidth,
