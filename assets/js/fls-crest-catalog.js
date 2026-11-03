@@ -277,5 +277,20 @@ window.FLS_CREST_CATALOG = {
   "Al Ettifaq": "saudi-arabia/Al_Ettifaq.svg",
   "Al Fateh": "saudi-arabia/Al_Fateh.svg",
   "Al Fayha": "saudi-arabia/Al_Fayha.svg",
-  "Al Riyadh": "saudi-arabia/Al_Riyadh.svg"
+  "Al Riyadh": "saudi-arabia/Al_Riyadh.svg",
+  "Sydney FC": "australia/Sydney_FC.svg",
+  "Raja Casablanca": "morocco/Raja_Casablanca.svg",
+  "FAR Rabat": "morocco/AS_FAR.svg",
+  "RS Berkane": "morocco/RS_Berkane.svg",
+  "Hassania Agadir": "morocco/Hassania_Agadir.svg",
+  "Moghreb Tétouan": "morocco/Moghreb_Tetouan.svg",
+  "Mamelodi Sundowns": "south-africa/Mamelodi_Sundowns.svg",
+  "Orlando Pirates": "south-africa/Orlando_Pirates.svg",
+  "Kaizer Chiefs": "south-africa/Kaizer_Chiefs.svg",
+  "Stellenbosch FC": "south-africa/Stellenbosch_FC.svg",
+  "Sekhukhune United": "south-africa/Sekhukhune_United.svg",
+  "AmaZulu FC": "south-africa/AmaZulu_FC.svg",
+  "TS Galaxy": "south-africa/TS_Galaxy.svg",
+  "Polokwane City": "south-africa/Polokwane_City.svg",
+  "Golden Arrows": "south-africa/Golden_Arrows.svg"
 };
