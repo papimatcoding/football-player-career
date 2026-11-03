@@ -76,6 +76,20 @@ test('career match starts, plays 90 minutes, and credits only actual hero events
  assert.equal(t.state.match.finished,true);
  assert.equal(t.grants,1);
 });
+test('a scheduled substitute enters at a real stoppage without an opponent substitution',async()=>{
+ const t=setup(65,'MCO');
+ const mod=await import('../assets/js/match-v11.js?test=bench');
+ const impl=mod.installFDG11(t.api);impl.start();
+ assert.equal(t.state.match.live.plannedEntry,65);
+ advance(t,impl);
+ const m=t.state.match,l=m.live;
+ assert.ok(l.heroEntryActual>=65&&l.heroEntryActual<=90,
+  'the manager must let the protagonist enter: '+l.heroEntryActual);
+ assert.equal(m.enter,l.heroEntryActual);
+ assert.ok(m.stats.goals<=m.scoreUs);
+ assert.ok(m.stats.assists<=m.scoreUs);
+ impl.close();assert.equal(t.grants,1);
+});
 test('paused saved match replays deterministically and preserves the same score',async()=>{
  const t=setup(0,'MCO');
  const mod=await import('../assets/js/match-v11.js?test=saveA');
