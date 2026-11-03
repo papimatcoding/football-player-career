@@ -283,13 +283,15 @@
   }
   function liveBadges(){
     if(!S||S.view!=='match'||!S.match)return;
-    var live=document.querySelector('.fdg-live-score');
-    if(live){
-      var names=S.match.home?[S.club.name,S.match.opp]:[S.match.opp,S.club.name];
-      live.querySelectorAll(':scope > b').forEach(function(team,i){
-        team.insertBefore(crest(names[i],false),team.firstChild);
-      });
-    }
+    var names=S.match.home?[S.club.name,S.match.opp]:[S.match.opp,S.club.name];
+    var legacy=document.querySelector('.fdg-live-score');
+    if(legacy)legacy.querySelectorAll(':scope > b').forEach(function(team,i){
+      team.insertBefore(crest(names[i],false),team.firstChild);
+    });
+    var v11=document.querySelector('.fdg11-scoreboard');
+    if(v11)v11.querySelectorAll(':scope > strong').forEach(function(team,i){
+      team.insertBefore(crest(names[i],true),team.firstChild);
+    });
   }
   function decorate(){
     rename();navigation();
