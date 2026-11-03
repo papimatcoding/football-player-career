@@ -201,6 +201,24 @@ function matchStatsHTML(m){
   escapeHTML(m.home?m.opp:api.state().club.name)+'</b></div>'+
   rows.map(([label,x,y])=>'<div class="fdg11-stats-row"><strong>'+x+'</strong><span>'+label+'</span><strong>'+y+'</strong></div>').join('')+'</div>';
 }
+function playerBreakdownHTML(m){
+ const st=m.stats||{},played=m.enter>=0;
+ if(!played)return '<div class="fdg11-break-player"><b>Tu futbolista</b><span>No ha disputado minutos.</span></div>';
+ const entries=[
+  ['Goles',st.goals||0],['Asistencias',st.assists||0],
+  ['Pases correctos',(st.passesCompleted||0)+' / '+(st.passes||0)],
+  ['Pases progresivos',st.progressivePasses||0],['Pases clave',st.keyPasses||0],
+  ['Recuperaciones',st.tackles||0],['A puerta',st.shotsOnTarget||0],
+  ['Metros conducidos',st.carryMeters||0],['Pérdidas',st.ballLosses||0],
+  ['Ocasiones falladas',st.xgWasted||0],['Faltas',st.fouls||0],['Amarillas',st.yellow||0]
+ ];
+ return '<div class="fdg11-break-player"><div class="fdg11-break-player-title"><b>'+
+  escapeHTML(api.state().player.name)+'</b><strong>NOTA '+m.rating.toFixed(1)+'</strong></div>'+
+  '<p>Valoración según goles, pases acertados y progresivos, creación, defensa, conducción y errores.</p>'+
+  '<div class="fdg11-break-player-grid">'+
+  entries.map(([k,v])=>'<div><span>'+escapeHTML(k)+'</span><strong>'+v+'</strong></div>').join('')+
+  '</div></div>';
+}
 function updateOverlay(m){
  const l=m.live,node=document.getElementById('fdg11-overlay');if(!node)return;
  const mode=l.done?'final':l.half?'half':'live';
@@ -215,7 +233,7 @@ function updateOverlay(m){
   escapeHTML(m.home?api.state().club.name:m.opp)+' <em>'+
   (m.home?m.scoreUs:m.scoreThem)+' : '+(m.home?m.scoreThem:m.scoreUs)+'</em> '+
   escapeHTML(m.home?m.opp:api.state().club.name)+'</h2>'+
-  matchStatsHTML(m)+
+  matchStatsHTML(m)+playerBreakdownHTML(m)+
   '<button type="button" class="btn fdg11-overlay-action" data-match-action="'+(mode==='final'?'close':'continue')+'">'+
   (mode==='final'?'Ver resultado y volver a mi carrera':'▶ Reanudar la segunda parte')+'</button></div>';
 }
