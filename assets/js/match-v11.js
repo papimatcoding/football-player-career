@@ -8,6 +8,7 @@ import {TEAMS} from '../matchlab/teams.js?v=0.5.8';
 import {PitchRenderer} from '../matchlab/render.js?v=0.5.8';
 import {assignRole,defaultRole,eligibleRoles} from '../matchlab/roles.js?v=0.5.8';
 import {technicalProfile} from '../matchlab/attributes.js?v=0.5.8';
+import {collectPlayerMetrics,calculatePlayerRating} from './match-rating-v114.js?v=11.4';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const HERO_SLOTS={POR:0,LD:1,DFC:3,LI:4,MCD:5,MC:6,MCO:7,ED:8,DC:9,EI:10};
 const LABELS={goal:'⚽',save:'🧤',shot:'🎯',corner:'🚩',offside:'🚩',foul:'🟨',yellow:'🟨',red:'🟥',substitution:'🔄',
@@ -146,16 +147,25 @@ function updateCareer(){
   }
  }
  const now=m.stats;
- now.goals=engine.goals.filter(g=>g.side===our&&g.scorer===S.player.name).length;
- now.assists=engine.goals.filter(g=>g.side===our&&g.assist===S.player.name).length;
- now.saves=events.filter(e=>e.type==='save'&&e.player===S.player.name&&e.side===our).length;
- now.tackles=events.filter(e=>['tackle','interception','duel'].includes(e.type)&&e.player===S.player.name&&e.side===our).length;
- now.passes=events.filter(e=>e.type==='pass'&&e.player===S.player.name&&e.side===our).length;
- now.shots=events.filter(e=>e.type==='shot'&&e.player===S.player.name&&e.side===our).length;
- now.yellow=events.filter(e=>e.type==='yellow'&&e.player===S.player.name&&e.side===our).length;
- const minutes=active||l.heroEntryActual>=0?Math.max(0,Math.floor(l.clock)-(m.enter||0)):0;
- m.rating=minutes>0?clamp(6.15+now.goals*1.2+now.assists*.76+now.saves*.12+
-   now.tackles*.075+now.passes*.017+now.shots*.035,3,10):6.3;
+ const entered=l.plannedEntry===0||Number.isInteger(l.heroEntryActual);
+ const minutes=entered?Math.max(0,(m.sentOff?m.exitMinute:Math.floor(l.clock))-(m.enter||0)):0;
+ const metrics=collectPlayerMetrics(engine,{side:our,name:S.player.name,minutes,position:S.player.pos});
+ now.goals=metrics.goals;
+ now.assists=metrics.assists;
+ now.saves=metrics.saves;
+ now.tackles=metrics.tackles+metrics.interceptions+metrics.duels;
+ now.passes=metrics.passes;
+ now.shots=metrics.shots;
+ now.yellow=metrics.yellow;
+ now.passesCompleted=metrics.passesCompleted;
+ now.progressivePasses=metrics.progressivePasses;
+ now.keyPasses=metrics.keyPasses;
+ now.shotsOnTarget=metrics.shotsOnTarget;
+ now.ballLosses=metrics.ballLosses;
+ now.carryMeters=Math.round(metrics.carryMeters);
+ now.fouls=metrics.fouls;
+ now.xgWasted=Number(metrics.xgWasted.toFixed(2));
+ m.rating=calculatePlayerRating(metrics,{minutes,position:S.player.pos,goalsConceded:engine.stats[other].goals});
 }
 function buildState(){
  const m=current();if(!m)return null;
@@ -223,8 +233,9 @@ function refreshUI(){
  if(ring)ring.style.setProperty('--rating-progress',heroOnField?((clamp(m.rating,3,10)-3)/7*100).toFixed(1)+'%':'0%');
  put('fdg11-rating-value',heroOnField?m.rating.toFixed(1):'—');
  put('fdg11-hero-status',heroOnField?'EN EL CAMPO':m.enter<0?'NO CONVOCADO':'BANQUILLO');
- put('fdg11-hero',m.stats.goals+' goles · '+m.stats.assists+' asist. · '+
-  m.stats.passes+' pases · '+m.stats.tackles+' recuperaciones · '+m.stats.shots+' remates');
+ put('fdg11-hero',m.stats.goals+' G · '+m.stats.assists+' A · '+
+  (m.stats.passesCompleted||0)+'/'+m.stats.passes+' pases · '+
+  m.stats.tackles+' recuperaciones · '+(m.stats.keyPasses||0)+' pases clave');
  const feed=document.getElementById('fdg11-bench-feed');
  if(feed){
   feed.hidden=heroOnField;
