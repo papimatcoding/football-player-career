@@ -23,12 +23,14 @@ try{
  const context=await browser.newContext({viewport:{width:1440,height:900}});
  page=await context.newPage();
  page.on('pageerror',err=>errors.push(err.message));
+ page.on('console',message=>{if(message.type()==='warning'&&message.text().includes('FLS Personality layer:'))errors.push(message.text());});
  await page.goto('http://127.0.0.1:8877/',{waitUntil:'domcontentloaded'});
  await check('New game brand',async()=>{
    await page.locator('.v4-entry .setuphero h1').waitFor();
    assert.match(await page.title(),/Football Life Simulator/);
    assert.match(await page.locator('.v4-entry .setuphero h1').innerText(),/FOOTBALL LIFE SIMULATOR/);
    assert.equal(await page.locator('#fdg10-nationality').count(),1,'Nationality field missing');
+   assert.equal(await page.locator('.fls-v3-draft-hero .fls-v3-eyebrow').count(),1,'Missing chapter zero cover');
  });
  await check('Verified crest catalog for several international leagues',async()=>{
    const info=await page.evaluate(()=>({
@@ -62,6 +64,12 @@ try{
    assert.equal(await page.locator('.v4-feature .fls-fixture .fls-crest').count(),2);
    assert.equal(await page.locator('.v4-clubline .fls-crest').count(),1);
    assert.equal(await page.locator('.fls-news-card').count(),1);
+   assert.equal(await page.locator('.fls-v3-matchday .fls-v3-versus .fls-crest').count(),2);
+   assert.equal(await page.locator('.fls-v3-matchday .fls-v3-maincta').count(),1);
+   assert.equal(await page.locator('.fls-v3-narrative').count(),1);
+   assert.equal(await page.locator('.fls-v3-stamp').count(),1);
+   assert.equal(await page.locator('.fls-v3-shortcuts button').count(),4);
+   assert.equal(await page.locator('.fls-v3-frontpage').count(),1);
    assert.equal(await page.locator('.v4-navbtn .fls-navsvg').count(),10);
  });
  await check('Team crests in tables and transfer scouting',async()=>{
@@ -70,15 +78,27 @@ try{
    assert.ok(rows>=8,'League table should contain clubs');
    assert.equal(await page.locator('table.league tbody .fls-table-club .fls-crest').count(),rows);
    await page.evaluate(()=>Game.tab('agent'));
+   assert.equal(await page.locator('.fls-v3-agent-head').count(),1,'Scouting room masthead missing');
+   assert.equal(await page.locator('.fls-v3-agent-radar .fls-v3-crest').count(),1,'Scouting spotlight crest missing');
    const scouts=await page.locator('.scout-item').count();
    if(scouts>0)assert.equal(await page.locator('.scout-item .fls-scout-title .fls-crest').count(),scouts);
    await page.evaluate(()=>Game.tab('hub'));
+ });
+ await check('Editorial newsroom and dynamic matchday story',async()=>{
+   await page.evaluate(()=>{S.player.fitness=43;render();});
+   assert.match(await page.locator('.fls-v3-narrative').innerText(),/forma física|recuperación/i);
+   await page.evaluate(()=>{S.player.fitness=95;render();Game.tab('news');});
+   assert.equal(await page.locator('.fls-v3-newsroom-brand').count(),1);
+   await page.evaluate(()=>Game.tab('hub'));
+   assert.equal(await page.locator('.fls-v3-matchday .fls-v3-maincta').count(),1);
  });
  await page.screenshot({path:screenshots+'/desktop.png',fullPage:true});
  await check('Player nationality differs from club country',async()=>{
    await page.evaluate(()=>Game.tab('player'));
    await page.locator('.fls-nationality').waitFor();
    assert.match(await page.locator('.fls-nationality').innerText(),/Dinamarca/);
+   assert.equal(await page.locator('.fls-v3-player-head').count(),1,'Player dossier masthead missing');
+   assert.equal(await page.locator('.fls-v3-skillhero').count(),1,'Player attribute focus missing');
    await page.evaluate(()=>Game.tab('hub'));
  });
  await check('Career phases still use existing game actions',async()=>{
@@ -118,6 +138,7 @@ try{
    assert.equal(await page.locator('.fdg11-scoreboard > strong .fls-crest').count(),2);
    await page.waitForTimeout(250);
  });
+ assert.equal(await page.evaluate(()=>window.FLS_PERSONALITY?.installed),true);
  assert.deepEqual(errors,[],'Unexpected browser JavaScript errors: '+errors.join('; '));
  console.log('ALL BROWSER SMOKE TESTS PASSED');
 } catch(error){
