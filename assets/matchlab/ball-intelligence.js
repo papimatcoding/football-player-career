@@ -6,8 +6,8 @@ export function aimPass(g,from,start,nominal,setPiece=false){
  const opponent=g.nearest(1-from.side,from.x,from.y,p=>p.i!==0);
  const near=opponent?distance(from,opponent):25;
  const scale=cap(1.1+(84-from.skills.pass)*.095+Math.max(0,length-12)*.095+
-  (near<3?1.05:near<6?.38:0),.28,4.6)*(setPiece?.42:1)*1.3;
- const lateral=g.random(-scale,scale),longitudinal=g.random(-scale*.45,scale*.45);
+  (near<3?1.05:near<6?.38:0),.28,4.6)*(setPiece?.42:1)*.94;
+ const lateral=g.random(-scale,scale),longitudinal=g.random(-scale*.35,scale*.35);
  const wanted={x:nominal.x-uy*lateral+ux*longitudinal,y:nominal.y+ux*lateral+uy*longitudinal};
  const exit=fieldExit(start,wanted);
  return exit?{end:exit.point,outOfPlay:exit.type}:{end:{x:cap(wanted.x,0,105),y:cap(wanted.y,0,68)},outOfPlay:null};
