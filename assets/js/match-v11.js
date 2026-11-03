@@ -14,6 +14,7 @@ const LABELS={goal:'⚽',save:'🧤',shot:'🎯',corner:'🚩',offside:'🚩',fo
  advantage:'▶',advantageBack:'⚑',half:'⏱',tackle:'🛡',interception:'🛡',combinationComplete:'✨',duel:'⚔',miss:'↗'};
 const capSkill=v=>clamp(Math.round(Number(v)||65),40,96);
 let api=null,engine=null,renderer=null,canvas=null,raf=0,last=0,accumulator=0,updating=false,session=null;
+let fromFrame=null;
 
 function current(){
  const S=api.state();return S?.match?.live?.engine===11?S.match:null;
@@ -159,7 +160,7 @@ function updateCareer(){
 function buildState(){
  const m=current();if(!m)return null;
  if(engine&&session===m)return engine;
- engine=buildEngine(m.live);session=m;renderer?.observer?.disconnect();renderer=null;canvas=null;
+ engine=buildEngine(m.live);session=m;renderer?.observer?.disconnect();renderer=null;canvas=null;fromFrame=null;
  const l=m.live,ticks=Math.max(0,Math.min(12000,Math.trunc(l.ticks)||0));
  // Replay the exact number of deterministic updates, with half-time preserved.
  for(let i=0;i<ticks;i++){
@@ -174,7 +175,7 @@ function paint(){
  if(!current()||!engine)return;
  const node=document.getElementById('fdg11-pitch');if(!node)return;
  if(canvas!==node){renderer?.observer?.disconnect();canvas=node;renderer=new PitchRenderer(node);}
- renderer.render(engine);
+ renderer.render(engine,fromFrame?{...fromFrame,alpha:clamp(accumulator/.08,0,1)}:null);
 }
 function refreshUI(){
  const m=current();if(!m||!engine)return;
@@ -208,6 +209,8 @@ function frame(now){
   accumulator+=elapsed*(l.mode==='highlights'?6:l.speed);
   let count=0;while(accumulator>=.08&&count<35){
    accumulator-=.08;count++;l.ticks++;
+   fromFrame={players:new Map(engine.teams.flat().map(p=>[p.id,{x:p.x,y:p.y}])),
+    ball:{x:engine.ball.x,y:engine.ball.y}};
    try{engine.update(.08)}catch(err){
     console.error('MatchLab career step failed',err);l.error=String(err.message||err);l.paused=true;api.save();break;
    }
@@ -218,8 +221,11 @@ function frame(now){
    l.lastSaved=Math.floor(l.clock/4);api.save();
   }
  }
- paint();if(l.half||l.done||now-(l.lastRendered||0)>250){refreshUI();l.lastRendered=now;}
+ paint();
+ if(l.half||l.done||l.paused||now-(l.lastRendered||0)>180){refreshUI();l.lastRendered=now;}
  if(l.error){putError(l.error);stop();return;}
+ // Do not burn animation frames at halftime, the final whistle or while paused.
+ if(l.half||l.done||l.paused){stop();return;}
  raf=requestAnimationFrame(frame);
 }
 function putError(message){
@@ -229,7 +235,7 @@ function putError(message){
 function resume(){
  if(!current()||api.state().view!=='match')return;
  buildState();
- if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}
+ if(!raf&&!current().live.half&&!current().live.done&&!current().live.paused){last=performance.now();raf=requestAnimationFrame(frame);}
 }
 function start(){
  const S=api.state(),m=S?.match;if(!m||m.started)return;
@@ -243,7 +249,7 @@ function start(){
 }
 function pause(){
  const m=current();if(!m||m.live.half||m.live.done)return;
- m.live.paused=!m.live.paused;api.save();refreshUI();
+ m.live.paused=!m.live.paused;api.save();refreshUI();if(!m.live.paused)resume();
 }
 function speed(n){
  const m=current();if(!m)return;
@@ -271,7 +277,7 @@ function close(){
   l.xpGranted=true;
  }
  api.save();
- renderer?.observer?.disconnect();renderer=null;canvas=null;
+ renderer?.observer?.disconnect();renderer=null;canvas=null;fromFrame=null;
  engine=null;session=null;api.finish();
 }
 function screen(){
