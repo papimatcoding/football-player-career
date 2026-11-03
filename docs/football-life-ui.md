@@ -57,3 +57,31 @@ Esta segunda fase amplía el diseño aprobado de Canva a las pantallas de canter
 **Limitaciones intencionadas:** SVG alojados remotamente; sin conexión se muestra la reserva de iniciales. No se ha implementado descarga/localización masiva de los assets, por lo que disponer de los recursos no es un requisito para seguir jugando. Algunos clubes están pendientes de verificar.
 
 **Pruebas:** `tests/fls-ui-smoke.mjs`, ejecutado en Chromium por el workflow `fls-ui.yml`. Comprobar siempre los flujos desde creación y reanudación de carrera; además de marcas, crestas de cantera, tablas, ojeadores, retransmisión y vista móvil.
+
+
+## UI V3 — Matchday Journal (3 noviembre 2026)
+
+**Idea creativa:** un simulador de carrera contado como una *revista deportiva interactiva*. La identidad mantiene el azul marino y el verde esmeralda, pero gana personalidad con titulares tipográficos, ritmos de composición y atmósfera de estadio creada por CSS. Nada de fotos generadas ni tarjetas de relleno.
+
+### Nueva capa visual
+
+- \`assets/js/fls-personality-v3.js\`: mejora el DOM después del render de UI V2, sin alterar estado, reglas, persistencia, MatchLab V11 ni eventos. Cada pantalla es derivada del estado real.
+- \`assets/css/fls-personality-v3.css\`: tipografía editorial, ambiente de estadio con gradientes y líneas, espacio negativo, variantes responsive y respeto por \`prefers-reduced-motion\`.
+- **Inicio:** tarjeta MATCHDAY JOURNAL, escudos prominentes, rival local/visitante, acciones de la semana intactas, resumen del vestuario y «lo que está en juego» determinado por lesión, forma, confianza, cantera o interés de ojeadores.
+- **Futbolista:** expediente / dorsal real del simulador, atributos auténticos destacados según su valor y escudo del club.
+- **Mercado:** informe del representante con el club seguidor más avanzado (requisitos reales), sin inventar ofertas ni garantizar fichajes.
+- **Noticias:** archivo editorial con entradas de \`S.inbox\` y numeración de crónicas.
+- **Final de temporada / postpartido:** cabeceras que resumen estadísticas reales, sin alterar su resultado.
+- **Identidad de club:** 30 paletas ilustrativas asignadas explícitamente a equipos populares, nunca asumidas automáticamente como colores oficiales para clubes desconocidos. El verde esmeralda sigue siendo el color de las acciones de juego.
+
+### Escudos
+
+La lista \`LEAGUES\` contiene 482 clubes. El catálogo tiene una ruta SVG identificada para 479 (**99,4 %**); los tres restantes son \`SuperSport United\`, \`Cape Town City\` y \`Royal AM\` (Sudáfrica). Todos conservan fallback de iniciales.
+
+Las canteras \`Sub-19\` usan el SVG del club matriz. SVG de Future FC utiliza el del mismo club tras su cambio de nombre a Modern Sport FC (2024). Las imágenes se cargan remotamente; no hay dependencias de red para guardar partidas o simular partidos. Se mantiene la posibilidad de mostrar iniciales si el recurso falla.
+
+### Checklist de calidad
+
+El workflow \`fls-ui.yml\` ejecuta las pruebas de \`tests/fls-ui-smoke.mjs\` en Chromium y adjunta una galería temporal de capturas (inicio, academias, mercado, jugador, noticias, móvil). El workflow V11 comprueba además la continuidad del motor 2D MatchLab. No fusionar una revisión sin ambas validaciones correctas.
+
+**Compatibilidad:** se mantiene la clave de guardado \`fuera_de_guion_carrera_v4\`. No se toca \`core.js\`, \`match-v11.js\` ni su integración. Los titulares de ambiente no añaden resultados, rumores ni noticias falsas a la simulación.
