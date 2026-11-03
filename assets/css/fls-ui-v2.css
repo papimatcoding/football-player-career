@@ -1,0 +1,66 @@
+
+/* Football Life Simulator — second-phase UI enhancements */
+.fls-club-title{display:flex;align-items:center;gap:16px;min-width:0;line-height:1.15}
+.fls-club-title>.fls-crest{flex-shrink:0;width:66px;height:66px;min-width:66px;background:#f9ffff0a}
+.fls-academy-offer{display:flex;flex-direction:column;gap:1px;position:relative;overflow:hidden;border-color:#3a5368!important;background:linear-gradient(155deg,#213b4e,#182b3c)!important}
+.fls-academy-offer .eyebrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fls-academy-offer .btn{margin-top:auto!important}
+.fls-academy-offer p{color:#b7c6d4}
+.fls-academy-offer .tag{background:#25455b;color:#caeadd}
+.fls-table-club{min-width:175px;white-space:nowrap}
+.fls-table-club>.fls-crest{width:28px;height:28px;min-width:28px;display:inline-grid;margin-right:10px;vertical-align:middle;border:0;background:transparent}
+.fls-table-club>.fls-crest img{max-width:94%;max-height:94%}
+.fls-league-view table.league{border-collapse:separate;border-spacing:0 3px}
+.fls-league-view table.league th{color:#97b5c7}
+.fls-league-view table.league td{padding:9px 8px;border-color:#ffffff10}
+.fls-league-view table.league tr.you{background:#244b4960;color:#b8fadd}
+.fls-league-view table.league tr:hover td{background:#ffffff07}
+.fls-scout-title{display:inline-flex;align-items:center;gap:10px;min-width:0}
+.fls-scout-title strong,.fls-scout-title b{font-weight:800;line-height:1.4}
+.fls-scout-title>.fls-crest{background:#ffffff0a}
+.fls-market-view .scout-item{background:#172b3d;border:1px solid #345066;border-radius:13px;padding:17px}
+.fls-market-view .scout-item:hover{border-color:#537f8c}
+.fls-market-view .scout-metrics{color:#a2bac9;gap:7px 15px}
+.fls-market-view>.card,.fls-market-view .card{background:linear-gradient(150deg,#1e3548,#1a2c3e);border:1px solid #344b5f}
+.fls-market-view .pick,.fls-season-view .pick{background:#172d40;color:#e7f4fb;border-color:#3a5367;padding:16px 18px;border-radius:12px}
+.fls-market-view .pick:hover,.fls-season-view .pick:hover{background:#25445a;border-color:#56e3ae}
+.fls-season-view .pick.selected{background:#214a44;border-color:#65dcb3;box-shadow:0 0 0 1px #65dcb35c inset}
+.fls-market-view .pick small,.fls-season-view .pick small{color:#9fb8c9}
+.fls-season-view .fls-offer{display:grid;grid-template-columns:45px minmax(0,1fr);grid-template-rows:auto auto auto;align-items:center;column-gap:14px}
+.fls-season-view .fls-offer>.fls-crest{grid-column:1;grid-row:1 / span 3;background:#ffffff0c}
+.fls-season-view .fls-offer strong,.fls-season-view .fls-offer small{grid-column:2}
+.fls-season-view .fls-offer>.fls-crest img{max-width:85%;max-height:85%}
+.fls-profile-view .fls-profile-card,.fls-player-view .fls-profile-card{background:linear-gradient(150deg,#263e51,#192c40);border-color:#3a5b6e;position:relative;overflow:hidden}
+.fls-profile-card::before{content:'';position:absolute;top:-130px;right:-140px;width:330px;height:330px;border:1px solid #b0d6e212;border-radius:50%;box-shadow:0 0 0 45px #9adcd605;pointer-events:none}
+.fls-player-view .fls-profile-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);align-items:start}
+.fls-player-view .profiletop{gap:20px;margin:20px 0 24px!important;position:relative}
+.fls-player-view .profiletop .avatar{background:linear-gradient(150deg,#315e71,#1b435b);color:#ddfff4;border-radius:17px;box-shadow:inset 0 0 0 1px #ffffff14}
+.fls-player-view .profiletop h2{font-size:clamp(22px,2.4vw,30px);line-height:1.1}
+.fls-player-view .profiletop .ovr{font-size:43px;color:#56e3ae}
+.fls-player-view .fls-clubchip{font-size:12px;color:#b9d1df;line-height:1.4}
+.fls-player-view .fls-nationality{margin-top:6px;margin-bottom:18px}
+.fls-player-view .skill{grid-template-columns:94px minmax(0,1fr) 30px;gap:13px;padding:4px 0;font-size:12px}
+.fls-player-view .skill>span{color:#d4e5ee}
+.fls-player-view .skill .bar{height:7px;background:#172b3d}
+.fls-player-view .bar i{background:linear-gradient(90deg,#4b928e,#56e3ae)}
+.fls-player-view .linefield{border:1px solid #5371805c;border-radius:13px;overflow:hidden}
+.fls-history-view .fixture{padding:14px 2px}
+.fls-history-title{display:flex;align-items:center;gap:11px}
+.fls-history-title>.fls-crest{background:#ffffff0b;flex-shrink:0}
+.fls-history-title strong{font-size:13px}
+.fls-history-view .medal{border-color:#807453;color:#f3c872;background:#4d433326}
+.v4-scoutmin .fls-scout-title{gap:10px}
+.fdg-live-score{align-items:center}
+.fdg-live-score > b{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;min-width:0}
+.fdg-live-score > b>.fls-crest{width:42px;height:42px;min-width:42px;flex-shrink:0;background:#ffffff0c}
+.fdg-live-score > b>.fls-crest img{max-width:84%;max-height:84%}
+.fls-match-view .fdg-live-stadium{border:1px solid #3c596e;background:linear-gradient(150deg,#1e3747,#17293b)}
+.fls-match-view .fdg-live-heading h1{font-size:clamp(26px,2.8vw,36px)}
+.fls-match-view .fdg-controlbar button{border-color:#446276}
+.fls-match-view .fdg-live-score strong{color:#f5fcff}
+.fls-match-view .v4-bigfixture .fls-crest{background:#fff9}
+.fls-clubchip .fls-crest{background:#ffffff0c}
+.fls-table-club .fls-fallback{font-size:10px}
+@media(max-width:950px){.fls-player-view .fls-profile-grid{grid-template-columns:1fr}.fdg-live-score > b{font-size:12px}.fdg-live-score > b>.fls-crest{width:34px;height:34px;min-width:34px}}
+@media(max-width:760px){.fls-club-title{gap:12px;font-size:21px!important}.fls-club-title>.fls-crest{width:54px;height:54px;min-width:54px}.fls-player-view .profiletop{gap:10px}.fls-player-view .profiletop .avatar{width:58px!important;height:58px!important;font-size:28px!important}.fls-player-view .profiletop .ovr{font-size:35px}.fls-player-view .skill{grid-template-columns:78px minmax(0,1fr) 24px;gap:7px}.fls-table-club{min-width:140px}.fls-table-club>.fls-crest{width:24px;height:24px;min-width:24px;margin-right:6px}.fdg-live-score > b{flex-direction:column;gap:6px;line-height:1.25}.fdg-live-score > b>.fls-crest{width:32px;height:32px;min-width:32px}.fls-season-view .fls-offer{column-gap:9px;grid-template-columns:39px 1fr}.fls-season-view .fls-offer>.fls-crest{width:37px;height:37px;min-width:37px}}
+@media(max-width:390px){.fls-academy-offer{padding:14px}.fls-club-title>.fls-crest{width:45px;height:45px;min-width:45px}.fdg-live-score > b{font-size:10px}}
