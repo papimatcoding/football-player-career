@@ -26,3 +26,18 @@
 .fdg11-role-actions{display:flex;gap:6px}
 .fdg11-role-actions .tinybtn{font-size:11px;padding:6px 8px}
 @media(max-width:560px){.fdg11-scoreboard{gap:7px}.fdg11-event{font-size:12px}.fdg11-role-row{align-items:flex-start;flex-direction:column}.fdg11-role-actions{align-self:flex-end}.fdg11-page .fdg-controlbar{flex-wrap:wrap}}
+
+/* Career 11.2: compact archetype choice, separate from role mastery. */
+.fdg11-archetypes{margin:16px 0 18px}
+.fdg11-archetypes-heading{display:flex;gap:8px;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.fdg11-archetypes-heading small{opacity:.65;font-size:11px}
+.fdg11-archetype-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.fdg11-archetype-option{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:5px;padding:12px;border:1px solid #426b5b77;background:#122b2c;border-radius:10px;color:inherit;cursor:pointer;min-height:89px}
+.fdg11-archetype-option strong{font-weight:700;font-size:13px}
+.fdg11-archetype-option small{opacity:.67;line-height:1.35;font-size:11px}
+.fdg11-archetype-option span{font-size:10px;font-weight:700;color:#a6f5c8}
+.fdg11-archetype-option.selected{border-color:#9ee7be;background:#1a3b36;box-shadow:inset 0 0 0 1px #9ee7be66}
+.fdg11-archetype-option:focus-visible{outline:2px solid #d8fddc;outline-offset:2px}
+@media(max-width:600px){.fdg11-archetypes-heading{align-items:flex-start;flex-direction:column}
+ .fdg11-archetype-choices{grid-template-columns:1fr}
+ .fdg11-archetype-option{min-height:unset}}
