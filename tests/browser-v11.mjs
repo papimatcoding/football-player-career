@@ -55,6 +55,9 @@ try{
  const continueButton=page.locator('#fdg11-overlay [data-match-action="continue"]');
  await continueButton.waitFor({state:'visible'});
  assert.ok(await page.locator('.fdg11-stats-row').count()>=6,'break stats must appear at half-time');
+ assert.equal(await page.locator('.fdg11-break-player-grid > div').count(),12,
+  'halftime should explain player rating using twelve football metrics');
+ assert.match(await page.locator('.fdg11-break-player-title').innerText(),/NOTA/);
  await page.waitForTimeout(350); // Previously the DOM replacement destroyed the button during click.
  await continueButton.click();
  await page.waitForFunction(()=>!S.match.live.half,{timeout:6000});
@@ -75,6 +78,7 @@ try{
  const finishButton=page.locator('#fdg11-overlay [data-match-action="close"]');
  await finishButton.waitFor({state:'visible'});
  assert.ok(await page.locator('.fdg11-stats-row').count()>=6,'break stats must appear at full-time');
+ assert.equal(await page.locator('.fdg11-break-player-grid > div').count(),12);
  await page.waitForTimeout(350);
  await finishButton.click();
  const end=await page.evaluate(()=>({view:S.view,results:S.results?.length,roleLevel:S.player.roleTraining?.level}));
