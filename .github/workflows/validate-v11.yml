@@ -19,3 +19,7 @@ jobs:
           node --check assets/matchlab/engine.js
       - name: Run deterministic career + 2D football integration tests
         run: npm test
+      - name: Run real Google Chrome smoke test
+        run: |
+          npm install --no-save --package-lock=false playwright
+          node tests/browser-v11.mjs
