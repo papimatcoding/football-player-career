@@ -83,3 +83,30 @@ export function fieldExit(start,end){
  const hit=hits.filter(h=>h.t>=0&&h.t<=1).sort((a,b)=>a.t-b.t)[0];
  return hit?{type:hit.type,point:{x:cap(start.x+dx*hit.t,0,105),y:cap(start.y+dy*hit.t,0,68)}}:null;
 }
+
+
+// Career 11.3: choose a physically safe driving lane rather than walking
+// straight into a central defender while there is no explicit dribble target.
+// This only returns a direction; the MatchEngine still moves at capped speed.
+export function safeForwardDribble(g,carrier){
+ if(!carrier||carrier.i===0||carrier.red)return null;
+ const dir=g.direction(carrier.side);
+ const opponents=g.teams[1-carrier.side].filter(p=>p.i>0&&!p.red);
+ const candidates=[
+  {dx:3.7,dy:0},{dx:3.3,dy:-2.9},{dx:3.3,dy:2.9}
+ ];
+ let best=null;
+ for(const c of candidates){
+  const target={x:carrier.x+dir*c.dx,y:carrier.y+c.dy};
+  if(target.x<3||target.x>102||target.y<3||target.y>65)continue;
+  let clearance=20;
+  for(const opponent of opponents)for(const t of [.35,.7,1]){
+   const x=carrier.x+(target.x-carrier.x)*t,y=carrier.y+(target.y-carrier.y)*t;
+   clearance=Math.min(clearance,Math.hypot(opponent.x-x,opponent.y-y));
+  }
+  if(clearance<3.2)continue;
+  const score=Math.min(clearance,12)*1.1+c.dx*.65-Math.abs(c.dy)*.16;
+  if(!best||score>best.score)best={...target,clearance,score};
+ }
+ return best;
+}

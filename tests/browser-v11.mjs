@@ -24,6 +24,21 @@ try{
  });
  await page.evaluate(()=>window.Game.playMatch());
  await page.waitForSelector('#fdg11-pitch',{timeout:8000});
+ await page.waitForSelector('#fdg11-rating-ring');
+ const liveUI=await page.evaluate(()=>{
+  const stage=document.getElementById('fdg11-pitch-stage'),canvas=document.getElementById('fdg11-pitch');
+  return {rating:document.getElementById('fdg11-rating-value')?.textContent,
+   benchHidden:document.getElementById('fdg11-bench-feed')?.hidden,
+   statsHidden:document.getElementById('fdg11-overlay')?.hidden,
+   canvasW:canvas?.getBoundingClientRect().width,canvasH:canvas?.getBoundingClientRect().height,
+   stageW:stage?.getBoundingClientRect().width,
+   viewport:document.documentElement.clientWidth};
+ });
+ assert.equal(liveUI.benchHidden,true,'live player should not see redundant commentary');
+ assert.equal(liveUI.statsHidden,true,'team stats must not be visible during active play');
+ assert.ok(liveUI.canvasW<=liveUI.viewport,'pitch must fit screen width');
+ assert.ok(Math.abs(liveUI.canvasW/liveUI.canvasH-105/68)<.08,'pitch must preserve geometry');
+ assert.ok(liveUI.rating&&liveUI.rating!=='—','hero rating should be visible on pitch');
  const started=await page.evaluate(()=>({engine:S.match.live.engine,started:S.match.started,clock:S.match.live.clock}));
  assert.equal(started.engine,11);assert.equal(started.started,true);
  await page.evaluate(()=>{S.match.live.speed=45});
@@ -31,7 +46,12 @@ try{
  const atHalf=await page.evaluate(()=>({clock:S.match.live.clock,status:document.querySelector('#fdg11-stage')?.textContent}));
  assert.ok(atHalf.clock>=45);
  assert.equal(atHalf.status,'DESCANSO','the browser must show halftime as soon as the first half ends');
- await page.evaluate(()=>window.Game.halfContinue());
+ const continueButton=page.locator('#fdg11-overlay [data-match-action="continue"]');
+ await continueButton.waitFor({state:'visible'});
+ assert.ok(await page.locator('.fdg11-stats-row').count()>=6,'break stats must appear at half-time');
+ await page.waitForTimeout(350); // Previously the DOM replacement destroyed the button during click.
+ await continueButton.click();
+ await page.waitForFunction(()=>!S.match.live.half,{timeout:6000});
  await page.waitForFunction(()=>S.match.live.done,{timeout:25000});
  const final=await page.evaluate(()=>({
   goals:[S.match.scoreUs,S.match.scoreThem],
@@ -46,10 +66,30 @@ try{
  assert.ok(final.fullRender>1);
  assert.ok(final.serializable);
  assert.ok(final.heroStats.goals<=final.goals[0]);
- await page.evaluate(()=>window.Game.liveClose());
+ const finishButton=page.locator('#fdg11-overlay [data-match-action="close"]');
+ await finishButton.waitFor({state:'visible'});
+ assert.ok(await page.locator('.fdg11-stats-row').count()>=6,'break stats must appear at full-time');
+ await page.waitForTimeout(350);
+ await finishButton.click();
  const end=await page.evaluate(()=>({view:S.view,results:S.results?.length,roleLevel:S.player.roleTraining?.level}));
  assert.equal(end.view,'post');assert.ok(end.results>=1);
  assert.ok(end.roleLevel>=1);
+ // Separate mobile stadium smoke test does not modify the already-finished save.
+ await page.setViewportSize({width:375,height:812});
+ await page.evaluate(()=>{startMatch();S.match.enter=65;persist();render();Game.playMatch();});
+ await page.waitForSelector('#fdg11-pitch');
+ await page.waitForFunction(()=>document.getElementById('fdg11-bench-feed')?.hidden===false,{timeout:5000});
+ assert.equal(await page.locator('#fdg11-rating-value').textContent(),'—',
+  'bench player should not receive a fictional rating');
+ const mobile=await page.evaluate(()=>{
+  const c=document.getElementById('fdg11-pitch').getBoundingClientRect();
+  return {left:c.left,right:c.right,height:c.height,viewport:innerWidth,
+   scrollWidth:document.documentElement.scrollWidth};
+ });
+ assert.ok(mobile.left>=-1&&mobile.right<=mobile.viewport+1,
+  'mobile pitch must fit screen: '+JSON.stringify(mobile));
+ assert.ok(mobile.scrollWidth<=mobile.viewport+2,
+  'no mobile horizontal overflow: '+JSON.stringify(mobile));
  assert.deepEqual(errors,[],'Uncaught browser exceptions: '+errors.join('; '));
  console.log('BROWSER PASS',JSON.stringify({initial,started,atHalf,final,end}));
 }finally{

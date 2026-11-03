@@ -2,8 +2,17 @@ import {shotPoint} from './shot-intelligence.js?v=0.5.7';
 const mix=(a,b,t)=>a+(b-a)*t;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export class PitchRenderer{
- constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.w=900;this.h=600;this.px=0;this.py=0;this.scale=1;this.lastBall=[];this.resize();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas)}
- resize(){const rect=this.canvas.getBoundingClientRect();const pixelRatio=Math.min(window.devicePixelRatio||1,2);this.canvas.width=Math.max(1,Math.floor(rect.width*pixelRatio));this.canvas.height=Math.max(1,Math.floor(rect.height*pixelRatio));this.w=rect.width;this.h=rect.height;this.ctx.setTransform(pixelRatio,0,0,pixelRatio,0,0);this.scale=Math.min((this.w-42)/105,(this.h-42)/68);this.px=(this.w-105*this.scale)/2;this.py=(this.h-68*this.scale)/2;}
+ constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.w=900;this.h=600;this.px=0;this.py=0;this.scale=1;this.lastBall=[];this.lastRectW=0;this.lastRectH=0;this.resize();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas)}
+ resize(){const rect=this.canvas.getBoundingClientRect();const w=rect.width,h=rect.height;if(!w||!h)return;
+  // Canvas width/height attributes change intrinsic dimensions; do not create a
+  // ResizeObserver feedback loop by resizing an unchanged CSS layout.
+  if(Math.abs(w-this.lastRectW)<.5&&Math.abs(h-this.lastRectH)<.5)return;
+  this.lastRectW=w;this.lastRectH=h;
+  const pixelRatio=Math.min(window.devicePixelRatio||1,1.5);
+  this.canvas.width=Math.max(1,Math.round(w*pixelRatio));this.canvas.height=Math.max(1,Math.round(h*pixelRatio));
+  this.w=w;this.h=h;this.ctx.setTransform(pixelRatio,0,0,pixelRatio,0,0);
+  this.scale=Math.min((this.w-20)/105,(this.h-20)/68);this.px=(this.w-105*this.scale)/2;this.py=(this.h-68*this.scale)/2;
+ }
  point(x,y){return [this.px+x*this.scale,this.py+y*this.scale]}
  field(engine){const ctx=this.ctx,[ox,oy]=this.point(0,0),S=this.scale;const X=v=>ox+v*S,Y=v=>oy+v*S;
   ctx.fillStyle='#08362c';ctx.fillRect(0,0,this.w,this.h);
@@ -21,7 +30,12 @@ export class PitchRenderer{
   // subtle in-field shading for both penalty spots
   if(engine?.restart?.type==='penalty'){const spot=engine.restart.spot;ctx.beginPath();ctx.arc(X(spot.x),Y(spot.y),S*2,0,7);ctx.fillStyle='#fff5';ctx.fill()}
  }
- render(engine){if(!this.w||!engine)return;const ctx=this.ctx;ctx.clearRect(0,0,this.w,this.h);this.field(engine);
+ render(engine,frame=null){if(!this.w||!engine)return;const ctx=this.ctx;this.field(engine);
+  const alpha=clamp(frame?.alpha??1,0,1);
+  // Engine physics remains deterministic at 80ms; animation interpolates
+  // positions on requestAnimationFrame, so 12.5Hz physics does not look 12.5FPS.
+  const smooth=(current,old)=>old&&Math.hypot(current.x-old.x,current.y-old.y)<15?
+    {x:mix(old.x,current.x,alpha),y:mix(old.y,current.y,alpha)}:current;
   const S=this.scale;
   // A flagged through ball freezes the defensive offside line at pass release.
   if(engine.offsideMark?.ttl>0){
@@ -33,7 +47,7 @@ export class PitchRenderer{
   }
   for(const side of [0,1])for(const p of engine.teams[side]){
    if(p.red)continue;
-   const [x,y]=this.point(p.x,p.y),color=engine.clubs[side].color;
+   const pos=smooth(p,frame?.players?.get(p.id));const [x,y]=this.point(pos.x,pos.y),color=engine.clubs[side].color;
    const bright=['#ecebf4','#f1ca4f'].includes(color);
    const radius=clamp(S*1.13,7.2,12.5);
    if(engine.ball.owner===p){ctx.beginPath();ctx.arc(x,y,radius+4.2,0,7);ctx.strokeStyle='#e9fca8';ctx.lineWidth=2;ctx.stroke()}
@@ -56,7 +70,7 @@ export class PitchRenderer{
     ctx.fillText(selected.aiRole?.replaceAll('_',' ').toUpperCase()||selected.role,x,y-20);ctx.restore();
    }
   }
-  const {ball}=engine;const [bx,by]=this.point(ball.x,ball.y);
+  const {ball}=engine;const easedBall=smooth(ball,frame?.ball);const [bx,by]=this.point(easedBall.x,easedBall.y);
   const rad=clamp(S*.56,4.5,7);
   if(ball.flight?.type==='shot'&&ball.flight.style==='curl'){
    const f=ball.flight,u=f.t/f.duration;
