@@ -108,6 +108,8 @@
     main.classList.add('fls-v5-day','fls-v5-day-'+phase);
     var rail=phaseRail(phase);
     head.insertAdjacentElement('afterend',rail);
+    /* An inactive day shows the archive/locked view: never imply tasks are actionable. */
+    if(S.day?.index!==phase){main.classList.add('fls-v5-inactive-day');return;}
     var stats=main.querySelector('.v4-compactmetrics');
     if(stats){
       stats.classList.add('fls-v5-stats');
