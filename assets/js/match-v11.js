@@ -56,15 +56,25 @@ function buildEngine(l){
   p.technical=technicalProfile(p);
  }
  const role=api.role()?.get(S.player);
+ // A snapshot affects only NEW games; old saves replay with no archetype boost.
+ const buildArchetype=l.archetype?api.role()?.archetype?.(S.player.pos,l.archetype):null;
+ const boost=buildArchetype?.boost||{};
  const heroSlot=HERO_SLOTS[S.player.pos]??7;
  const heroAttributes=p=>{
   const attrs=S.player.attrs||{};
   p.name=S.player.name;p.number=api.number();p.isHero=true;
-  p.rating=capSkill((attrs.ritmo+attrs.pase+attrs.tiro+attrs.defensa+attrs.regate+attrs.fisico)/6);
-  p.skills={pace:capSkill(attrs.ritmo),pass:capSkill(attrs.pase),shot:capSkill(attrs.tiro),tackle:capSkill(attrs.defensa)};
-  p.technical=technicalProfile(p,{finishing:capSkill(attrs.tiro),shotPower:capSkill(attrs.tiro),
-   curve:capSkill((Number(attrs.regate)||65)*.60+(Number(attrs.tiro)||65)*.40),
-   technique:capSkill(attrs.regate),composure:capSkill((Number(attrs.pase)||65)*.35+(Number(attrs.regate)||65)*.65),
+  const rawRating=(attrs.ritmo+attrs.pase+attrs.tiro+attrs.defensa+attrs.regate+attrs.fisico)/6;
+  // Goalkeepers use actual goalkeeping training in new matches rather than
+  // an outfield average. Archetypes never confer Role+ automatically.
+  p.rating=capSkill((l.archetype&&S.player.pos==='POR'&&Number.isFinite(Number(attrs.porteria)))?
+    Number(attrs.porteria)+(boost.keeper||0):rawRating+(boost.keeper||0));
+  p.skills={pace:capSkill(attrs.ritmo+(boost.pace||0)),pass:capSkill(attrs.pase+(boost.pass||0)),
+   shot:capSkill(attrs.tiro+(boost.shot||0)),tackle:capSkill(attrs.defensa+(boost.tackle||0))};
+  p.technical=technicalProfile(p,{finishing:capSkill(attrs.tiro+(boost.finishing||0)),
+   shotPower:capSkill(attrs.tiro+(boost.shot||0)),
+   curve:capSkill((Number(attrs.regate)||65)*.60+(Number(attrs.tiro)||65)*.40+(boost.curve||0)),
+   technique:capSkill(attrs.regate+(boost.technique||0)),
+   composure:capSkill((Number(attrs.pase)||65)*.35+(Number(attrs.regate)||65)*.65+(boost.composure||0)),
    preferredFoot:S.player.foot==='Zurdo'?'left':S.player.foot==='Ambidiestro'?'both':'right'});
   p.roleFamiliarity={...(role?.mastery||{})};
   p.energy=clamp((Number(S.player.fitness)||75)/100,.52,1);
@@ -227,7 +237,7 @@ function start(){
  const role=api.role()?.get(S.player);
  const l={engine:11,seed:Math.floor(Math.random()*4294967295)>>>0,ticks:0,clock:0,
   speed:1,mode:'full',paused:false,half:false,done:false,plannedEntry:m.enter,
-  equippedRole:role?.selected||null,feed:[],lastEventId:0,lastSaved:0,resumedSecondHalf:false};
+  equippedRole:role?.selected||null,archetype:role?.archetype||null,feed:[],lastEventId:0,lastSaved:0,resumedSecondHalf:false};
  m.started=true;m.minute=0;m.live=l;session=null;engine=null;accumulator=0;
  buildState();api.save();api.render();resume();
 }
