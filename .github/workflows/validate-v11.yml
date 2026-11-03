@@ -14,10 +14,7 @@ jobs:
           node-version: '24'
       - name: Validate browser classic and ESM syntax
         run: |
-          node --check assets/js/core.js
-          node --check assets/js/match-v10.js
-          node --check assets/js/match-v11-launch.js
-          node --check assets/js/role-progression-v11.js
+          node --input-type=commonjs -e "const fs=require('node:fs'),vm=require('node:vm'); for(const p of ['assets/js/core.js','assets/js/match-v10.js','assets/js/match-v11-launch.js','assets/js/role-progression-v11.js']){ new vm.Script(fs.readFileSync(p,'utf8'),{filename:p}); console.log(p+' classic-script syntax OK'); }"
           node --check assets/js/match-v11.js
           node --check assets/matchlab/engine.js
       - name: Run deterministic career + 2D football integration tests
