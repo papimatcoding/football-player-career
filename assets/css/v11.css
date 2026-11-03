@@ -122,3 +122,21 @@
  .fdg11-page.fdg6-page .fdg11-canvas{width:min(100%,85dvh)}
  .fdg11-modal{max-height:95dvh}
 }
+
+
+/* Match 11.4: the pitch is for football, the career HUD lives outside it. */
+.fdg11-hud-strip{display:flex;justify-content:flex-end;align-items:center;min-height:66px;min-width:0;padding:4px 0 9px}
+.fdg11-page .fdg11-hud-strip .fdg11-performance{
+ position:relative;top:auto;right:auto;max-width:min(100%,470px);width:auto;
+ padding:8px 13px 8px 8px;box-shadow:0 4px 16px #0003;pointer-events:auto;
+ backdrop-filter:none;background:linear-gradient(130deg,#142c40,#0b1b2b);
+}
+.fdg11-page .fdg11-hud-strip .fdg11-performance-text{gap:4px}
+.fdg11-page .fdg11-hud-strip .fdg11-performance-text span{font-size:11px;color:#d9e9f5}
+@media(max-width:760px){
+ .fdg11-hud-strip{min-height:53px;padding:3px 0 7px}
+ .fdg11-page .fdg11-hud-strip .fdg11-performance{max-width:100%;width:100%;padding:7px 10px}
+ .fdg11-page .fdg11-hud-strip .fdg11-rating-ring{width:44px;height:44px}
+ .fdg11-page .fdg11-hud-strip .fdg11-performance-text b{font-size:12px}
+ .fdg11-page .fdg11-hud-strip .fdg11-performance-text span{font-size:10px}
+}
