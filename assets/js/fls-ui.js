@@ -3,7 +3,7 @@
 (function(){
   'use strict';
   if(window.FLSUI && window.FLSUI.installed)return;
-  var repo='https://raw.githubusercontent.com/JoseArroyave/football-logos/refs/heads/main/logos/spain/';
+  var repo='https://raw.githubusercontent.com/JoseArroyave/football-logos/main/logos/';
   var crests={
     'AD Alcorcón':'Alcorcón.svg','Algeciras CF':'Algeciras.svg','Antequera CF':'Antequera.svg',
     'CD Teruel':'Teruel.svg','CE Europa':'CE_Europa.svg','Rayo Majadahonda':'Rayo_Majadahonda.svg',
@@ -53,15 +53,24 @@
     return e;
   }
   function icon(name){return '<svg class="fls-navsvg" viewBox="0 0 24 24" aria-hidden="true">'+(glyph[name]||glyph.hub)+'</svg>';}
+  function mappedCrest(name){
+    var club=String(name||'').replace(/ Sub-19$/,'');
+    var catalog=window.FLS_CREST_CATALOG||{};
+    return catalog[club]||(crests[club]?'spain/'+crests[club]:null);
+  }
+  function assetUrl(name){
+    var file=mappedCrest(name);
+    return file?repo+file.split('/').map(encodeURIComponent).join('/'):null;
+  }
   function crest(name,large){
     var el=element('span','fls-crest'+(large?' fls-crest-lg':''));
     el.title=name;el.setAttribute('role','img');el.setAttribute('aria-label','Escudo de '+name);
     var fallback=element('span','fls-fallback',(name||'FC').split(/\s+/).map(function(s){return s[0]||'';}).join('').slice(0,3));
     el.appendChild(fallback);
-    var file=crests[name];
-    if(file){
+    var url=assetUrl(name);
+    if(url){
       var img=element('img');
-      img.src=repo+encodeURIComponent(file);
+      img.src=url;
       img.alt='';
       img.loading=large?'eager':'lazy';
       img.decoding='async';
@@ -175,6 +184,8 @@
   function player(){
     if(!S||S.view!=='hub'||activeTab!=='player')return;
     var top=document.querySelector('.v4-main .profiletop');if(!top)return;
+    top.closest('.card')?.classList.add('fls-profile-card');
+    top.closest('.cols2')?.classList.add('fls-profile-grid');
     var chip=element('div','fls-clubchip');
     chip.appendChild(crest(S.club.name,false));
     var f=flag(S.club.country);if(f)chip.appendChild(f);
@@ -196,15 +207,111 @@
       label.parentNode.insertBefore(crest(teamName,true),label);
     });
   }
+
+  function smallCrest(name){
+    var badge=crest(name,false);
+    badge.classList.add('fls-crest-sm');
+    return badge;
+  }
+  function draftOffers(){
+    if(!S||S.view!=='draft')return;
+    var cards=document.querySelectorAll('.v4-entry .grid .card.bright');
+    cards.forEach(function(card,i){
+      var offer=S.academyOffers&&S.academyOffers[i];
+      if(!offer)return;
+      card.classList.add('fls-academy-offer');
+      var title=card.querySelector('h2');
+      if(title){
+        title.classList.add('fls-club-title');
+        title.insertBefore(crest(offer.parent,true),title.firstChild);
+      }
+      var eyebrow=card.querySelector('.eyebrow');
+      var countryFlag=flag(offer.country);
+      if(eyebrow&&countryFlag)eyebrow.insertBefore(countryFlag,eyebrow.firstChild);
+    });
+  }
+  function leagueBadges(){
+    document.querySelectorAll('table.league tbody tr').forEach(function(row){
+      var cell=row.cells&&row.cells[1];if(!cell)return;
+      var name=cell.textContent.trim();if(!name)return;
+      cell.classList.add('fls-table-club');
+      cell.insertBefore(smallCrest(name),cell.firstChild);
+    });
+  }
+  function marketBadges(){
+    if(!S)return;
+    var list=document.querySelectorAll('.scout-item');
+    list.forEach(function(item,i){
+      var candidate=S.watchlist&&S.watchlist[i];
+      if(!candidate)return;
+      var heading=item.querySelector('.sectionhead strong');
+      if(!heading)return;
+      var wrap=element('span','fls-scout-title');
+      wrap.appendChild(smallCrest(candidate.name));
+      heading.parentNode.insertBefore(wrap,heading);
+      wrap.appendChild(heading);
+    });
+    var spotlight=document.querySelector('.v4-scoutrow b');
+    if(spotlight&&S.watchlist&&S.watchlist[0]){
+      var wrapper=element('span','fls-scout-title');
+      wrapper.appendChild(smallCrest(S.watchlist[0].name));
+      spotlight.parentNode.insertBefore(wrapper,spotlight);
+      wrapper.appendChild(spotlight);
+    }
+  }
+  function seasonBadges(){
+    if(!S||S.view!=='season')return;
+    document.querySelectorAll('.v4-main .pick[onclick^="Game.offer("]').forEach(function(button){
+      var match=(button.getAttribute('onclick')||'').match(/Game\.offer\((\d+)\)/);
+      var offer=match&&S.offers&&S.offers[Number(match[1])];
+      if(!offer)return;
+      button.classList.add('fls-offer');
+      button.insertBefore(crest(offer.name,false),button.firstChild);
+    });
+  }
+  function historyBadges(){
+    if(!S||S.view!=='hub'||activeTab!=='history')return;
+    var history=(S.history||[]).slice().reverse();
+    document.querySelectorAll('.v4-main .fixture .names').forEach(function(node,i){
+      var item=history[i];if(!item)return;
+      var heading=node.querySelector('strong');if(!heading)return;
+      var wrap=element('div','fls-history-title');
+      node.insertBefore(wrap,heading);
+      wrap.appendChild(smallCrest(item.club));
+      wrap.appendChild(heading);
+    });
+  }
+  function liveBadges(){
+    if(!S||S.view!=='match'||!S.match)return;
+    var names=S.match.home?[S.club.name,S.match.opp]:[S.match.opp,S.club.name];
+    var legacy=document.querySelector('.fdg-live-score');
+    if(legacy)legacy.querySelectorAll(':scope > b').forEach(function(team,i){
+      team.insertBefore(crest(names[i],false),team.firstChild);
+    });
+    var v11=document.querySelector('.fdg11-scoreboard');
+    if(v11)v11.querySelectorAll(':scope > strong').forEach(function(team,i){
+      team.insertBefore(crest(names[i],true),team.firstChild);
+    });
+  }
   function decorate(){
     rename();navigation();
     if(!S)return;
+    draftOffers();
     var shell=document.querySelector('.v4-shell');
     if(shell)shell.dataset.flsView=S.view;
-    clubline();home();fixtures();player();post();
+    var main=document.querySelector('.v4-main');
+    if(main){
+      main.classList.toggle('fls-player-view',S.view==='hub'&&activeTab==='player');
+      main.classList.toggle('fls-market-view',S.view==='hub'&&activeTab==='agent');
+      main.classList.toggle('fls-league-view',S.view==='hub'&&activeTab==='league');
+      main.classList.toggle('fls-history-view',S.view==='hub'&&activeTab==='history');
+      main.classList.toggle('fls-season-view',S.view==='season');
+      main.classList.toggle('fls-match-view',S.view==='match');
+    }
+    clubline();home();fixtures();player();post();leagueBadges();marketBadges();seasonBadges();historyBadges();liveBadges();
   }
   var original=render;
   render=function(){var response=original.apply(this,arguments);try{decorate();}catch(err){console.warn('FLSUI decoration:',err);}return response;};
-  window.FLSUI={installed:true,version:'1.0.0',crestUrl:function(name){return crests[name]?repo+encodeURIComponent(crests[name]):null;},flagUrl:function(country){return flags[country]?'https://flagcdn.com/'+flags[country]+'.svg':null;}};
+  window.FLSUI={installed:true,version:'2.0.0',crestUrl:assetUrl,flagUrl:function(country){return flags[country]?'https://flagcdn.com/'+flags[country]+'.svg':null;}};
   render();
 })();

@@ -30,12 +30,29 @@ try{
    assert.match(await page.locator('.v4-entry .setuphero h1').innerText(),/FOOTBALL LIFE SIMULATOR/);
    assert.equal(await page.locator('#fdg10-nationality').count(),1,'Nationality field missing');
  });
+ await check('Verified crest catalog for several international leagues',async()=>{
+   const info=await page.evaluate(()=>({
+     count:Object.keys(window.FLS_CREST_CATALOG||{}).length,
+     barca:window.FLSUI.crestUrl('FC Barcelona'),
+     youth:window.FLSUI.crestUrl('FC Barcelona Sub-19'),
+     bayern:window.FLSUI.crestUrl('Bayern Múnich'),
+     sabadell:window.FLSUI.crestUrl('CE Sabadell'),
+     copenhagen:window.FLSUI.crestUrl('FC Copenhague')
+   }));
+   assert.ok(info.count>=400,'Insufficient verified crest catalog: '+info.count);
+   assert.match(info.barca,/spain\/Barcelona\.svg$/);
+   assert.equal(info.barca,info.youth,'Youth team must inherit parent club crest');
+   assert.match(info.bayern,/germany\/Bayern_Munich\.svg$/);
+   assert.match(info.sabadell,/spain\/Sabadell\.svg$/);
+   assert.match(info.copenhagen,/denmark\/F\.C\._Copenhagen\.svg$/);
+ });
  await page.locator('#name').fill('Test FLS');
  await page.locator('#fdg10-nationality').selectOption('Dinamarca');
  await page.locator('button[onclick="Game.create()"]').click();
  await check('Academy selection and actual state',async()=>{
    assert.equal(await page.evaluate(()=>S.view),'draft');
    assert.equal(await page.evaluate(()=>S.player.nationality),'Dinamarca');
+   assert.equal(await page.locator('.fls-academy-offer .fls-club-title .fls-crest').count(),3,'All academy proposals need club crests');
    await page.evaluate(()=>Game.join(0));
    assert.equal(await page.evaluate(()=>S.view),'hub');
    assert.equal(await page.evaluate(()=>S.player.name),'Test FLS');
@@ -46,6 +63,16 @@ try{
    assert.equal(await page.locator('.v4-clubline .fls-crest').count(),1);
    assert.equal(await page.locator('.fls-news-card').count(),1);
    assert.equal(await page.locator('.v4-navbtn .fls-navsvg').count(),10);
+ });
+ await check('Team crests in tables and transfer scouting',async()=>{
+   await page.evaluate(()=>Game.tab('league'));
+   const rows=await page.locator('table.league tbody tr').count();
+   assert.ok(rows>=8,'League table should contain clubs');
+   assert.equal(await page.locator('table.league tbody .fls-table-club .fls-crest').count(),rows);
+   await page.evaluate(()=>Game.tab('agent'));
+   const scouts=await page.locator('.scout-item').count();
+   if(scouts>0)assert.equal(await page.locator('.scout-item .fls-scout-title .fls-crest').count(),scouts);
+   await page.evaluate(()=>Game.tab('hub'));
  });
  await page.screenshot({path:screenshots+'/desktop.png',fullPage:true});
  await check('Player nationality differs from club country',async()=>{
@@ -79,6 +106,17 @@ try{
    const overflow=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:innerWidth}));
    assert.ok(overflow.scroll<=overflow.viewport+2,'Horizontal overflow: '+JSON.stringify(overflow));
    await page.screenshot({path:screenshots+'/mobile.png',fullPage:true});
+ });
+ await check('MatchLab V11 live scoreboard includes both club crests',async()=>{
+   await page.evaluate(()=>Game.tab('match'));
+   await page.evaluate(()=>Game.startMatch());
+   assert.equal(await page.evaluate(()=>S.view),'match');
+   await page.waitForFunction(()=>!!window.FDG11?.start,null,{timeout:20000});
+   await page.evaluate(()=>Game.playMatch());
+   await page.locator('.fdg11-scoreboard').waitFor({timeout:15000});
+   assert.equal(await page.evaluate(()=>S.match?.live?.engine),11);
+   assert.equal(await page.locator('.fdg11-scoreboard > strong .fls-crest').count(),2);
+   await page.waitForTimeout(250);
  });
  assert.deepEqual(errors,[],'Unexpected browser JavaScript errors: '+errors.join('; '));
  console.log('ALL BROWSER SMOKE TESTS PASSED');
