@@ -1,0 +1,39 @@
+name: Validate Football Life Simulator UI
+on:
+  pull_request:
+    paths:
+      - 'assets/js/fls-ui.js'
+      - 'assets/css/fls-ui.css'
+      - 'index.html'
+      - 'tests/fls-ui-smoke.mjs'
+      - '.github/workflows/fls-ui.yml'
+  push:
+    branches:
+      - feature/football-life-ui-v1
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: node --check assets/js/fls-ui.js
+      - name: Install Playwright
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Browser UI smoke test
+        run: node tests/fls-ui-smoke.mjs
+      - name: Save screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fls-ui-smoke-debug
+          path: tests/screenshots/
+          if-no-files-found: ignore
