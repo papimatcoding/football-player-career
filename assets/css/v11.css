@@ -1,0 +1,28 @@
+/* FUERA DE GUIÓN 11 — career + MatchLab integration */
+.fdg11-page{max-width:1140px;margin:0 auto}
+.fdg11-scoreboard{display:flex;align-items:center;justify-content:space-around;gap:14px;text-align:center;padding:10px 5px 18px}
+.fdg11-scoreboard strong{font-size:clamp(13px,2.4vw,21px);font-weight:750;flex:1;min-width:0}
+.fdg11-scoreboard b{font-size:clamp(23px,4vw,38px);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fdg11-canvas{position:relative;width:100%;overflow:hidden;border-radius:12px;min-height:200px;background:#08362c}
+.fdg11-canvas canvas{display:block;width:100%;height:auto;min-height:200px}
+.fdg11-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#061b17d9;z-index:2;color:#effff6;text-align:center;padding:20px}
+.fdg11-overlay[hidden],.fdg11-error[hidden]{display:none!important}
+.fdg11-overlay h2{font-weight:900;font-size:clamp(22px,4vw,34px)}
+.fdg11-overlay p{max-width:440px;line-height:1.5;margin:0}
+.fdg11-statline,.fdg11-heroline{font-size:13px;font-weight:700;opacity:.86;padding:8px 0}
+.fdg11-events{display:grid;gap:6px;max-height:300px;overflow:auto}
+.fdg11-event{display:flex;align-items:flex-start;gap:12px;padding:9px 8px;border-radius:8px;background:rgba(128,255,180,.045);font-size:13px;line-height:1.4}
+.fdg11-event b{font-variant-numeric:tabular-nums;min-width:38px;color:#8bdcba}
+.fdg11-event span{flex:1}
+.fdg11-error{padding:10px;background:#411d1d;border:1px solid #8c5b5b;border-radius:8px}
+.fdg11-role-panel{margin-top:16px}
+.fdg11-role-panel p.micro{line-height:1.5}
+.fdg11-role-progress{height:9px;border-radius:6px;overflow:hidden;background:#213f35;margin:12px 0 5px}
+.fdg11-role-progress div{height:100%;background:#9ee7be;border-radius:inherit}
+.fdg11-roles{display:grid;gap:6px}
+.fdg11-role-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #426b5b55;border-radius:10px;padding:10px 12px}
+.fdg11-role-row>div:first-child{display:flex;flex-direction:column;gap:2px}
+.fdg11-role-row small{opacity:.6;font-size:11px}
+.fdg11-role-actions{display:flex;gap:6px}
+.fdg11-role-actions .tinybtn{font-size:11px;padding:6px 8px}
+@media(max-width:560px){.fdg11-scoreboard{gap:7px}.fdg11-event{font-size:12px}.fdg11-role-row{align-items:flex-start;flex-direction:column}.fdg11-role-actions{align-self:flex-end}.fdg11-page .fdg-controlbar{flex-wrap:wrap}}
