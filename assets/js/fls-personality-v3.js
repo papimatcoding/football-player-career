@@ -184,7 +184,7 @@
    if(brow)brow.textContent='IDENTIDAD  /  FUTBOLISTA';
    const badge=node('div','fls-v3-dossier-badge');
    badge.appendChild(logo(S.club.name,false));
-   badge.appendChild(node('span','',S.stage==='academy'?'CAN TERA  /  '+(S.club.parent||S.club.name):'PRIMER EQUIPO  /  '+S.club.name));
+   badge.appendChild(node('span','',S.stage==='academy'?'CANTERA  /  '+(S.club.parent||S.club.name):'PRIMER EQUIPO  /  '+S.club.name));
    card.insertBefore(badge,card.querySelector('.profiletop'));
   }
   const attr=[...document.querySelectorAll('.fls-player-view .card')].find(c=>c.querySelectorAll('.skill').length>0);
