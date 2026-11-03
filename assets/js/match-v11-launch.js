@@ -48,7 +48,7 @@ window.FDG11Career={
    requestAnimationFrame(()=>window.FDG11?.afterRender?.());
   }
  };
- import('./match-v11.js?v=11.2').then(mod=>{
+ import('./match-v11.js?v=11.3').then(mod=>{
   window.FDG11=mod.installFDG11(window.FDG11Career);
   if(S?.match?.live?.engine===11&&S.view==='match'){
    window.FDG11.restore();
