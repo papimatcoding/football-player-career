@@ -1,0 +1,24 @@
+name: Validate Career + MatchLab v11
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+jobs:
+  career:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate browser classic and ESM syntax
+        run: |
+          node --check assets/js/core.js
+          node --check assets/js/match-v10.js
+          node --check assets/js/match-v11-launch.js
+          node --check assets/js/role-progression-v11.js
+          node --check assets/js/match-v11.js
+          node --check assets/matchlab/engine.js
+      - name: Run deterministic career + 2D football integration tests
+        run: npm test
