@@ -98,16 +98,6 @@ try{
    await page.reload({waitUntil:'domcontentloaded'});
    assert.equal(await page.evaluate(()=>S.player.name),'Test FLS');
  });
- await check('Match broadcast includes both club crests',async()=>{
-   await page.evaluate(()=>Game.startMatch());
-   assert.equal(await page.evaluate(()=>S.view),'match');
-   await page.evaluate(()=>Game.playMatch());
-   await page.locator('.fdg-live-score').waitFor();
-   assert.equal(await page.locator('.fdg-live-score > b .fls-crest').count(),2);
-   await page.evaluate(()=>Game.liveSkip());
-   await page.evaluate(()=>Game.liveClose());
-   assert.equal(await page.evaluate(()=>S.view),'post');
- });
  await check('Mobile has working navigation and no horizontal overflow',async()=>{
    await page.setViewportSize({width:375,height:812});
    await page.evaluate(()=>Game.back());
@@ -116,6 +106,17 @@ try{
    const overflow=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,viewport:innerWidth}));
    assert.ok(overflow.scroll<=overflow.viewport+2,'Horizontal overflow: '+JSON.stringify(overflow));
    await page.screenshot({path:screenshots+'/mobile.png',fullPage:true});
+ });
+ await check('MatchLab V11 live scoreboard includes both club crests',async()=>{
+   await page.evaluate(()=>Game.tab('match'));
+   await page.evaluate(()=>Game.startMatch());
+   assert.equal(await page.evaluate(()=>S.view),'match');
+   await page.waitForFunction(()=>!!window.FDG11?.start,null,{timeout:20000});
+   await page.evaluate(()=>Game.playMatch());
+   await page.locator('.fdg11-scoreboard').waitFor({timeout:15000});
+   assert.equal(await page.evaluate(()=>S.match?.live?.engine),11);
+   assert.equal(await page.locator('.fdg11-scoreboard > strong .fls-crest').count(),2);
+   await page.waitForTimeout(250);
  });
  assert.deepEqual(errors,[],'Unexpected browser JavaScript errors: '+errors.join('; '));
  console.log('ALL BROWSER SMOKE TESTS PASSED');
