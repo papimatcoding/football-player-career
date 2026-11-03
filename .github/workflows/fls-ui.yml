@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'assets/js/fls-ui.js'
+      - 'assets/js/fls-crest-catalog.js'
+      - 'assets/css/fls-ui-v2.css'
       - 'assets/css/fls-ui.css'
       - 'index.html'
       - 'tests/fls-ui-smoke.mjs'
@@ -10,6 +12,7 @@ on:
   push:
     branches:
       - feature/football-life-ui-v1
+      - feature/fls-ui-v2-club-crests
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +26,7 @@ jobs:
         with:
           node-version: '22'
       - name: JavaScript syntax
-        run: node --check assets/js/fls-ui.js
+        run: node --check assets/js/fls-ui.js && node --check assets/js/fls-crest-catalog.js && node --check tests/fls-ui-smoke.mjs
       - name: Install Playwright
         run: npm install --no-save --no-package-lock playwright@1.56.1
       - name: Install browser
