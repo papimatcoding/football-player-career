@@ -1,0 +1,297 @@
+/* FUERA DE GUIÓN 11 — MatchLab 0.5.8 is the source of ball physics,
+ * results and career statistics for NEW matches. V10 replays are untouched.
+ * Persist only serializable inputs + frame count. Rebuild by deterministic replay
+ * after refresh; never JSON.stringify a live MatchEngine with Maps and cycles.
+ */
+import {MatchEngine} from '../matchlab/engine.js?v=0.5.8';
+import {TEAMS} from '../matchlab/teams.js?v=0.5.8';
+import {PitchRenderer} from '../matchlab/render.js?v=0.5.8';
+import {assignRole,defaultRole,eligibleRoles} from '../matchlab/roles.js?v=0.5.8';
+import {technicalProfile} from '../matchlab/attributes.js?v=0.5.8';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const HERO_SLOTS={POR:0,LD:1,DFC:3,LI:4,MCD:5,MC:6,MCO:7,ED:8,DC:9,EI:10};
+const LABELS={goal:'⚽',save:'🧤',shot:'🎯',corner:'🚩',offside:'🚩',foul:'🟨',yellow:'🟨',red:'🟥',substitution:'🔄',
+ advantage:'▶',advantageBack:'⚑',half:'⏱',tackle:'🛡',interception:'🛡',combinationComplete:'✨',duel:'⚔',miss:'↗'};
+const capSkill=v=>clamp(Math.round(Number(v)||65),40,96);
+let api=null,engine=null,renderer=null,canvas=null,raf=0,last=0,accumulator=0,updating=false,session=null;
+
+function current(){
+ const S=api.state();return S?.match?.live?.engine===11?S.match:null;
+}
+function shapeCareerRoster(m){
+ const S=api.state(),raw=api.roster();
+ // f10Lineups() is ordered [user, opponent], irrespective of home/away.
+ const rosters=raw.map(arr=>arr.slice(0,11).map(p=>({...p})));
+ if(m.enter===0){
+  const oldIndex=api.heroOldIndex(),targetIndex=HERO_SLOTS[S.player.pos]??7;
+  if(oldIndex!==targetIndex){
+   const a=rosters[0][oldIndex];rosters[0][oldIndex]=rosters[0][targetIndex];rosters[0][targetIndex]=a;
+  }
+  rosters[0][targetIndex].name=S.player.name;rosters[0][targetIndex].number=api.number();
+ }
+ return m.home?[rosters[0],rosters[1]]:[rosters[1],rosters[0]];
+}
+function buildEngine(l){
+ const S=api.state(),m=S.match,ownSide=m.home?0:1,opponent=api.club(m.opp);
+ const prototypeHome=TEAMS.find(t=>t.id==='barca'),prototypeAway=TEAMS.find(t=>t.id==='getafe');
+ const lineups=shapeCareerRoster(m),names=m.home?[S.club.name,m.opp]:[m.opp,S.club.name];
+ const power=m.home?[S.club.power,opponent.power]:[opponent.power,S.club.power];
+ const source=[prototypeHome,prototypeAway];
+ const clubs=source.map((base,side)=>({
+  ...base,name:names[side],rating:power[side],style:side===ownSide?
+   (m.tactics==='attack'?'vertical':m.tactics==='calm'?'bloque':'posesion'):
+   (power[side]>82?'vertical':'equilibrada'),
+  players:lineups[side].map(p=>({name:p.name,number:p.number}))
+ }));
+ const mode=m.tactics==='attack'?'ofensiva':m.tactics==='calm'?'defensiva':'equilibrada';
+ const tactics=ownSide===0?[mode,'equilibrada']:['equilibrada',mode];
+ const g=new MatchEngine(clubs[0],clubs[1],l.seed,{tactics});
+ // MatchLab's sample OVRs are not the real career squad strength.
+ // Clamp these fictional roster values to their respective career club power.
+ for(let side=0;side<2;side++)for(const p of [...g.teams[side],...g.benches[side]]){
+  const base=source[side].rating;
+  const adjustment=(power[side]-base)*.78;
+  p.rating=capSkill(p.rating+adjustment);
+  for(const k of Object.keys(p.skills))p.skills[k]=capSkill(p.skills[k]+adjustment);
+  p.technical=technicalProfile(p);
+ }
+ const role=api.role()?.get(S.player);
+ const heroSlot=HERO_SLOTS[S.player.pos]??7;
+ const heroAttributes=p=>{
+  const attrs=S.player.attrs||{};
+  p.name=S.player.name;p.number=api.number();p.isHero=true;
+  p.rating=capSkill((attrs.ritmo+attrs.pase+attrs.tiro+attrs.defensa+attrs.regate+attrs.fisico)/6);
+  p.skills={pace:capSkill(attrs.ritmo),pass:capSkill(attrs.pase),shot:capSkill(attrs.tiro),tackle:capSkill(attrs.defensa)};
+  p.technical=technicalProfile(p,{finishing:capSkill(attrs.tiro),shotPower:capSkill(attrs.tiro),
+   curve:capSkill((Number(attrs.regate)||65)*.60+(Number(attrs.tiro)||65)*.40),
+   technique:capSkill(attrs.regate),composure:capSkill((Number(attrs.pase)||65)*.35+(Number(attrs.regate)||65)*.65),
+   preferredFoot:S.player.foot==='Zurdo'?'left':S.player.foot==='Ambidiestro'?'both':'right'});
+  p.roleFamiliarity={...(role?.mastery||{})};
+  p.energy=clamp((Number(S.player.fitness)||75)/100,.52,1);
+  const preferred=l.equippedRole;
+  if(preferred&&eligibleRoles(p.role).includes(preferred))assignRole(p,preferred);
+  else assignRole(p,defaultRole(p,g.clubs[ownSide]));
+  return p;
+ };
+ let heroReserve=null;
+ if(l.plannedEntry===0){
+  const hero=g.teams[ownSide][heroSlot];heroAttributes(hero);
+  hero.subOn=true; // Prevent the manager from substituting the protagonist automatically.
+ }else if(l.plannedEntry>0){
+  const reference=g.teams[ownSide][heroSlot];
+  heroReserve=heroAttributes({...reference,id:ownSide+'-career-hero',i:11+g.benches[ownSide].length,subOn:false,red:false});
+  g.benches[ownSide].push(heroReserve);
+ }
+ const originalSubs=g.makeSubsAtStoppage.bind(g);
+ g.makeSubsAtStoppage=function(){
+  const minute=g.time/60;
+  const already=g.teams[ownSide].some(p=>p.isHero);
+  if(heroReserve&&!already&&minute>=l.plannedEntry&&g.subsUsed[ownSide]<5&&g.subWindowsUsed[ownSide]<3){
+   const idx=g.teams[ownSide].findIndex(p=>p.i===heroSlot&&!p.red&&!p.subOn);
+   const benchIdx=g.benches[ownSide].findIndex(p=>p.id===heroReserve.id);
+   if(idx>=1&&benchIdx>=0){
+    const old=g.teams[ownSide][idx],incoming=g.benches[ownSide].splice(benchIdx,1)[0];
+    Object.assign(incoming,{i:old.i,role:old.role,anchor:{...old.anchor},x:old.x,y:old.y,fx:old.fx,fy:old.fy,subOn:true});
+    heroAttributes(incoming);
+    g.teams[ownSide][idx]=incoming;
+    g.subsUsed[ownSide]++;g.subWindowsUsed[ownSide]++;g.stats[ownSide].substitutions++;
+    g.lastSubMinute[ownSide]=minute;
+    g.add('substitution',ownSide,`${incoming.name} entra por ${old.name}.`,incoming,{in:incoming.name,out:old.name,hero:true});
+    l.heroEntryActual=Math.ceil(minute);
+   }
+  }
+  // Reserve a remaining in-play substitution window for a scheduled hero entry.
+  const preserve=heroReserve&&!g.teams[ownSide].some(p=>p.isHero)&&minute<l.plannedEntry&&g.subWindowsUsed[ownSide]>=2;
+  const saved=g.subWindowsUsed[ownSide];
+  if(preserve)g.subWindowsUsed[ownSide]=3;
+  try{originalSubs();}finally{if(preserve)g.subWindowsUsed[ownSide]=saved;}
+ };
+ g.start();
+ return g;
+}
+function updateCareer(){
+ const S=api.state(),m=current();if(!m||!engine)return;
+ const l=m.live,our=m.home?0:1,other=1-our;
+ l.clock=engine.time/60;l.half=engine.status==='halftime';l.done=engine.status==='finished';
+ m.minute=Math.min(90,Math.floor(l.clock));
+ m.scoreUs=engine.stats[our].goals;m.scoreThem=engine.stats[other].goals;
+ const hero=engine.teams[our].find(p=>p.isHero);
+ const active=Boolean(hero)&&!hero.red&&m.enter>=0;
+ if(l.plannedEntry>0&&Number.isInteger(l.heroEntryActual))m.enter=l.heroEntryActual;
+ if(hero?.red&&!m.sentOff){m.sentOff=true;m.exitMinute=Math.ceil(l.clock);}
+ const events=engine.events;
+ if(events.length){
+  const fresh=events.filter(e=>e.id>l.lastEventId);
+  if(fresh.length){
+   for(const e of fresh){
+    if(e.type==='goal'||e.type==='save'||e.type==='shot'||e.type==='corner'||e.type==='yellow'||
+       e.type==='red'||e.type==='substitution'||e.type==='half'||e.type==='advantage'||
+       e.type==='advantageBack'||e.type==='duel'||e.type==='tackle'){
+     l.feed.unshift({id:e.id,minute:e.minute,text:(LABELS[e.type]||'⚽')+' '+e.description,type:e.type});
+    }
+    l.lastEventId=e.id;
+   }
+   l.feed=l.feed.slice(0,45);
+  }
+ }
+ const now=m.stats;
+ now.goals=engine.goals.filter(g=>g.side===our&&g.scorer===S.player.name).length;
+ now.assists=engine.goals.filter(g=>g.side===our&&g.assist===S.player.name).length;
+ now.saves=events.filter(e=>e.type==='save'&&e.player===S.player.name&&e.side===our).length;
+ now.tackles=events.filter(e=>['tackle','interception','duel'].includes(e.type)&&e.player===S.player.name&&e.side===our).length;
+ now.passes=events.filter(e=>e.type==='pass'&&e.player===S.player.name&&e.side===our).length;
+ now.shots=events.filter(e=>e.type==='shot'&&e.player===S.player.name&&e.side===our).length;
+ now.yellow=events.filter(e=>e.type==='yellow'&&e.player===S.player.name&&e.side===our).length;
+ const minutes=active||l.heroEntryActual>=0?Math.max(0,Math.floor(l.clock)-(m.enter||0)):0;
+ m.rating=minutes>0?clamp(6.15+now.goals*1.2+now.assists*.76+now.saves*.12+
+   now.tackles*.075+now.passes*.017+now.shots*.035,3,10):6.3;
+}
+function buildState(){
+ const m=current();if(!m)return null;
+ if(engine&&session===m)return engine;
+ engine=buildEngine(m.live);session=m;renderer?.observer?.disconnect();renderer=null;canvas=null;
+ const l=m.live,ticks=Math.max(0,Math.min(12000,Math.trunc(l.ticks)||0));
+ // Replay the exact number of deterministic updates, with half-time preserved.
+ for(let i=0;i<ticks;i++){
+  if(engine.status==='halftime')engine.resumeHalf();
+  if(engine.status==='finished')break;
+  engine.update(.08);
+ }
+ if(engine.status==='halftime'&&!l.half&&l.resumedSecondHalf)engine.resumeHalf();
+ updateCareer();return engine;
+}
+function paint(){
+ if(!current()||!engine)return;
+ const node=document.getElementById('fdg11-pitch');if(!node)return;
+ if(canvas!==node){renderer?.observer?.disconnect();canvas=node;renderer=new PitchRenderer(node);}
+ renderer.render(engine);
+}
+function refreshUI(){
+ const m=current();if(!m||!engine)return;
+ const l=m.live;const put=(id,text)=>{const e=document.getElementById(id);if(e)e.textContent=text;};
+ put('fdg11-clock',Math.floor(Math.min(90,l.clock))+"'");put('fdg11-score',`${m.home?m.scoreUs:m.scoreThem} : ${m.home?m.scoreThem:m.scoreUs}`);
+ put('fdg11-stage',l.done?'FINAL':l.half?'DESCANSO':l.clock<45?'PRIMERA PARTE':'SEGUNDA PARTE');
+ put('fdg11-pause',l.paused?'▶ Continuar':'Ⅱ Pausar');
+ const progress=document.getElementById('fdg11-progress');if(progress)progress.style.width=clamp(l.clock/90*100,0,100)+'%';
+ const tag=document.getElementById('fdg11-events');
+ if(tag)tag.innerHTML=l.feed.slice(0,11).map(e=>`<div class="fdg11-event"><b>${e.minute}'</b><span>${escapeHTML(e.text)}</span></div>`).join('');
+ const stat=document.getElementById('fdg11-stats');if(stat){
+  const our=m.home?0:1,other=1-our,s=engine.stats[our],t=engine.stats[other];
+  stat.textContent=`Remates ${s.shots}–${t.shots} · Pases ${s.completed}–${t.completed} · Conducciones ${s.carries}–${t.carries} · Córneres ${s.corners}–${t.corners}`;
+ }
+ const hero=document.getElementById('fdg11-hero');
+ if(hero)hero.textContent=`Tu actuación · ${m.stats.goals} goles · ${m.stats.assists} asist. · ${m.stats.passes} pases · ${m.stats.tackles} recuperaciones · Nota ${m.enter<0?'—':m.rating.toFixed(1)}`;
+ const overlay=document.getElementById('fdg11-overlay');
+ if(overlay){
+  overlay.hidden=!(l.half||l.done);
+  overlay.innerHTML=l.done?
+   '<h2>FINAL DEL PARTIDO</h2><p>El resultado y las estadísticas proceden de las acciones reales de MatchLab.</p><button class="btn" onclick="Game.liveClose()">Volver a la carrera →</button>':
+   '<h2>DESCANSO</h2><p>Las dos partes duran aproximadamente 2 minutos cada una.</p><button class="btn" onclick="Game.halfContinue()">Empezar segunda parte →</button>';
+ }
+}
+const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stop(){if(raf){cancelAnimationFrame(raf);raf=0;}last=0;}
+function frame(now){
+ raf=0;const m=current();if(!m||!engine||m!==session||api.state().view!=='match'){stop();return}
+ let l=m.live,elapsed=clamp((now-(last||now))/1000,0,.15);last=now;
+ if(!l.paused&&!l.half&&!l.done){
+  accumulator+=elapsed*(l.mode==='highlights'?6:l.speed);
+  let count=0;while(accumulator>=.08&&count<35){
+   accumulator-=.08;count++;l.ticks++;
+   try{engine.update(.08)}catch(err){
+    console.error('MatchLab career step failed',err);l.error=String(err.message||err);l.paused=true;api.save();break;
+   }
+   if(engine.status!=='live')break;
+  }
+  updateCareer();
+  if(l.half||l.done||Math.floor(l.clock/4)>l.lastSaved){
+   l.lastSaved=Math.floor(l.clock/4);api.save();
+  }
+ }
+ paint();if(now-(l.lastRendered||0)>250){refreshUI();l.lastRendered=now;}
+ if(l.error){putError(l.error);stop();return;}
+ raf=requestAnimationFrame(frame);
+}
+function putError(message){
+ const node=document.getElementById('fdg11-errors');
+ if(node){node.hidden=false;node.textContent='El motor se ha detenido sin alterar tu partida. '+message;}
+}
+function resume(){
+ if(!current()||api.state().view!=='match')return;
+ buildState();
+ if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}
+}
+function start(){
+ const S=api.state(),m=S?.match;if(!m||m.started)return;
+ api.oldStop();api.roster();
+ const role=api.role()?.get(S.player);
+ const l={engine:11,seed:Math.floor(Math.random()*4294967295)>>>0,ticks:0,clock:0,
+  speed:1,mode:'full',paused:false,half:false,done:false,plannedEntry:m.enter,
+  equippedRole:role?.selected||null,feed:[],lastEventId:0,lastSaved:0,resumedSecondHalf:false};
+ m.started=true;m.minute=0;m.live=l;session=null;engine=null;accumulator=0;
+ buildState();api.save();api.render();resume();
+}
+function pause(){
+ const m=current();if(!m||m.live.half||m.live.done)return;
+ m.live.paused=!m.live.paused;api.save();refreshUI();
+}
+function speed(n){
+ const m=current();if(!m)return;
+ m.live.speed=[1,2,4].includes(Number(n))?Number(n):1;
+ m.live.mode='full';api.save();refreshUI();
+}
+function skip(){
+ const m=current();if(!m||m.live.done)return;
+ if(m.live.half){continueHalf();return;}
+ m.live.mode=m.live.mode==='highlights'?'full':'highlights';api.save();refreshUI();
+}
+function continueHalf(){
+ const m=current();if(!m||!m.live.half||m.live.done)return;
+ engine.resumeHalf();m.live.half=false;m.live.paused=false;m.live.resumedSecondHalf=true;
+ api.save();refreshUI();resume();
+}
+function close(){
+ const m=current();if(!m||!m.live.done||m.finished)return;
+ updateCareer();stop();
+ const S=api.state(),l=m.live;
+ if(!l.xpGranted&&m.enter>=0){
+  const actual=l.heroEntryActual??l.plannedEntry;
+  const mins=actual>=0?Math.max(0,90-actual):0;
+  api.role()?.grant(mins,m.rating);
+  l.xpGranted=true;
+ }
+ api.save();
+ renderer?.observer?.disconnect();renderer=null;canvas=null;
+ engine=null;session=null;api.finish();
+}
+function screen(){
+ const S=api.state(),m=current();if(!m)return '';
+ const l=m.live,home=m.home?S.club.name:m.opp,away=m.home?m.opp:S.club.name;
+ return `<div class="fdg-live-page fdg6-page fdg11-page">
+  <div class="v4-viewhead fdg-live-heading"><div><span class="v4-kicker">JORNADA ${S.round+1} · MOTOR MATCHLAB 0.5.8</span>
+  <h1>${escapeHTML(home)} — ${escapeHTML(away)}</h1>
+  <p>Partido 2D completo · 2 minutos por parte · Fútbol simulado en tiempo real</p></div></div>
+  <section class="v4-panel fdg-live-stadium">
+    <div class="fdg11-scoreboard"><strong>${escapeHTML(home)}</strong><b id="fdg11-score">0 : 0</b><strong>${escapeHTML(away)}</strong></div>
+    <div class="fdg-timebar"><b id="fdg11-clock">0'</b><div class="fdg-progress"><span id="fdg11-progress"></span></div><small id="fdg11-stage">PRIMERA PARTE</small></div>
+    <div class="fdg-canvas-wrap fdg11-canvas"><canvas id="fdg11-pitch" width="900" height="590" aria-label="Partido físico en 2D con jugadores y balón" role="img"></canvas>
+    <div class="fdg11-overlay" id="fdg11-overlay" hidden></div></div>
+    <p class="fdg11-statline" id="fdg11-stats"></p>
+    <div class="fdg-controlbar">
+      <button class="tinybtn" id="fdg11-pause" onclick="Game.livePause()">Ⅱ Pausar</button>
+      <button class="tinybtn" onclick="Game.liveSpeed(1)">1×</button>
+      <button class="tinybtn" onclick="Game.liveSpeed(2)">2×</button>
+      <button class="tinybtn" onclick="Game.liveSpeed(4)">4×</button>
+      <button class="tinybtn" onclick="Game.liveSkip()">${l.mode==='highlights'?'Ver todo':'Momentos importantes'}</button>
+    </div>
+    <p class="fdg11-heroline" id="fdg11-hero"></p>
+    <p class="fdg11-error" id="fdg11-errors" hidden></p>
+  </section>
+  <section class="v4-panel"><h3>Acciones del encuentro</h3><div class="fdg11-events" id="fdg11-events"></div></section>
+ </div>`;
+}
+export function installFDG11(career){
+ api=career;
+ return {start,restore:resume,screen,afterRender:()=>{if(current()){paint();refreshUI();resume();}},
+  pause,speed,skip,continueHalf,close,resume};
+}
