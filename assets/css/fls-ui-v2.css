@@ -64,3 +64,11 @@
 @media(max-width:950px){.fls-player-view .fls-profile-grid{grid-template-columns:1fr}.fdg-live-score > b{font-size:12px}.fdg-live-score > b>.fls-crest{width:34px;height:34px;min-width:34px}}
 @media(max-width:760px){.fls-club-title{gap:12px;font-size:21px!important}.fls-club-title>.fls-crest{width:54px;height:54px;min-width:54px}.fls-player-view .profiletop{gap:10px}.fls-player-view .profiletop .avatar{width:58px!important;height:58px!important;font-size:28px!important}.fls-player-view .profiletop .ovr{font-size:35px}.fls-player-view .skill{grid-template-columns:78px minmax(0,1fr) 24px;gap:7px}.fls-table-club{min-width:140px}.fls-table-club>.fls-crest{width:24px;height:24px;min-width:24px;margin-right:6px}.fdg-live-score > b{flex-direction:column;gap:6px;line-height:1.25}.fdg-live-score > b>.fls-crest{width:32px;height:32px;min-width:32px}.fls-season-view .fls-offer{column-gap:9px;grid-template-columns:39px 1fr}.fls-season-view .fls-offer>.fls-crest{width:37px;height:37px;min-width:37px}}
 @media(max-width:390px){.fls-academy-offer{padding:14px}.fls-club-title>.fls-crest{width:45px;height:45px;min-width:45px}.fdg-live-score > b{font-size:10px}}
+
+/* MatchLab V11 live score identity, preserving the new physical 2D engine */
+.fls-match-view .fdg11-scoreboard{align-items:center;gap:14px}
+.fls-match-view .fdg11-scoreboard>strong{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;line-height:1.3;text-align:center;min-width:0;overflow-wrap:anywhere}
+.fls-match-view .fdg11-scoreboard>strong>.fls-crest{flex-shrink:0;background:#f3f8fc12;border-color:#e6fbff1a}
+.fls-match-view .fdg11-scoreboard>strong>.fls-crest img{max-width:82%;max-height:82%}
+.fls-match-view .fdg11-scoreboard>#fdg11-score{font-weight:850;color:#f5f9fd}
+@media(max-width:760px){.fls-match-view .fdg11-scoreboard{gap:7px}.fls-match-view .fdg11-scoreboard>strong{font-size:11px;gap:6px}.fls-match-view .fdg11-scoreboard>strong>.fls-crest{width:40px;height:40px;min-width:40px}}
