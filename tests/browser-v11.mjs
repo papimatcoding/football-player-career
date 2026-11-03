@@ -30,6 +30,7 @@ try{
  await page.waitForFunction(()=>S.match.live.half,{timeout:25000});
  const atHalf=await page.evaluate(()=>({clock:S.match.live.clock,status:document.querySelector('#fdg11-stage')?.textContent}));
  assert.ok(atHalf.clock>=45);
+ assert.equal(atHalf.status,'DESCANSO','the browser must show halftime as soon as the first half ends');
  await page.evaluate(()=>window.Game.halfContinue());
  await page.waitForFunction(()=>S.match.live.done,{timeout:25000});
  const final=await page.evaluate(()=>({
