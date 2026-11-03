@@ -202,7 +202,7 @@ function matchStatsHTML(m){
   rows.map(([label,x,y])=>'<div class="fdg11-stats-row"><strong>'+x+'</strong><span>'+label+'</span><strong>'+y+'</strong></div>').join('')+'</div>';
 }
 function playerBreakdownHTML(m){
- const st=m.stats||{},played=m.enter>=0;
+ const st=m.stats||{},played=m.enter>=0&&m.live?.clock>m.enter;
  if(!played)return '<div class="fdg11-break-player"><b>Tu futbolista</b><span>No ha disputado minutos.</span></div>';
  const entries=[
   ['Goles',st.goals||0],['Asistencias',st.assists||0],
