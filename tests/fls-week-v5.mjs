@@ -28,6 +28,11 @@ try{
  await page.locator('button[onclick="Game.create()"]').click();
  await page.evaluate(()=>Game.join(0));
  await verify('V5 adapter installed',async()=>assert.equal(await page.evaluate(()=>window.FLS_WEEK?.installed),true));
+ await page.evaluate(()=>Game.tab('life'));
+ await verify('An inactive day does not offer a misleading 0/2 checklist',async()=>{
+   assert.equal(await page.locator('.fls-v5-rail-stage').count(),3);
+   assert.equal(await page.locator('.fls-v5-preparation-count').count(),0);
+ });
  await page.evaluate(()=>Game.tab('training'));
  await verify('Training starts 0/2',async()=>{
    assert.equal((await page.locator('.fls-v5-preparation-count').innerText()).trim(),'0 / 2');
@@ -57,6 +62,11 @@ try{
  });
  await page.screenshot({path:shots+'/training-completed.png',fullPage:true,animations:'disabled'});
  await page.evaluate(()=>Game.dayNext(false));
+ await page.evaluate(()=>Game.tab('training'));
+ await verify('Completed training day does not show live task meter',async()=>{
+   assert.equal(await page.locator('.fls-v5-preparation-count').count(),0);
+ });
+ await page.evaluate(()=>Game.tab('life'));
  await verify('New life day resets preparation and mobile event state',async()=>{
    assert.equal(await page.evaluate(()=>S.day.index),1);
    assert.equal((await page.locator('.fls-v5-preparation-count').innerText()).trim(),'0 / 2');
