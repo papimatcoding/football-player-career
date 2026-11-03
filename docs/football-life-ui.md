@@ -106,3 +106,26 @@ El workflow \`fls-ui.yml\` ejecuta las pruebas de \`tests/fls-ui-smoke.mjs\` en 
 - **61 auditorías geométricas** con Chromium en tests/fls-layout-audit.mjs: comprueban desbordamientos del documento, centrado del área principal, de enfrentamientos y de marcadores, y límites horizontales de contenedores importantes en 10 resoluciones de 320 a 1920 px.
 - Capturas automáticas de alta y baja resolución, fichero layout-report.json y reportes de error en el artefacto temporal football-life-ui-v4-layout-gallery de GitHub Actions (retención siete días).
 - Las pruebas confirman alineación técnica, pero no sustituyen una revisión humana de las capturas para valorar la calidad artística.
+
+## UI V5 — Experiencia semanal (3 de noviembre de 2026)
+
+### Motivo
+La carrera incorpora entrenamiento, vida personal y partido como tres etapas diferenciadas, pero su continuidad visual y el progreso de las acciones no eran evidentes. Este parche mejora la claridad y el aspecto editorial sin tocar las reglas.
+
+### Cambios
+- Una línea de recorrido con tres etapas, derivada de S.day.index, S.week y S.day.answers. Nunca permite saltarse acciones ni altera la navegación existente.
+- Preparación del día con marcador 0/2, 1/2 o 2/2: actividad y decisión contextual. Solo se marca como lista cuando el estado real del juego confirma las dos.
+- Planes de entrenamiento y de vida personal con iconos y efectos explícitos: físico, confianza, concentración, moral, química, reputación y saldo, tomados directamente de TRAININGS y LIFE. No se inventan bonificaciones.
+- Los costes de actividades pagadas se muestran antes de seleccionarlas; los controles del motor original siguen determinando si hay suficiente saldo.
+- Previa del partido renovada: local/visitante, recorrido semanal completado y condición real del futbolista. No cambia convocatoria, alineación ni simulación.
+- Corrección de interfaz móvil: la etiqueta de la situación deja de marcarse como resuelta por un evento del día anterior. Requiere la respuesta del día actual.
+- Noticias: al no registrar temporada individualmente en cada mensaje, se oculta el identificador T calculado usando la temporada actual. El número de jornada se conserva sin presentar una temporada incorrecta.
+- Archivo JS aislado en assets/js/fls-week-v5.js y estilos en assets/css/fls-week-v5.css, cargados después de V4. Sin cambio en core.js ni motor MatchLab.
+
+### QA
+- Nueva prueba tests/fls-week-v5.mjs: creación de carrera, entrenamiento 0→1→2, avance al segundo día, coste real y química en actividades, segundo día 0→1→2, previa del partido con estados reales, mobile 320–1440 y continuidad con MatchLab V11.3.
+- Se mantienen los tests funcionales de 11 casos y las 61 auditorías de centrados de V4.
+- Las capturas generadas automáticamente incluyen inicio y final del entrenamiento, vida personal, previa escritorio y móvil.
+
+### Compatibilidad
+El parche solo lee el estado S, las constantes de actividades y las imágenes ya existentes. No modifica las partidas guardadas, ni cambia probabilidades, atributos, resultados o reglas de MatchLab.
