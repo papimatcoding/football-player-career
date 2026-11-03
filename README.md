@@ -1,3 +1,33 @@
+# FUERA DE GUIÓN 11 — MatchLab integrado en tu carrera (noviembre 2026)
+
+**Jugar:** https://papimatcoding.github.io/football-player-career/
+
+La versión 11 cambia **solo los partidos nuevos**, conservando las semanas, ligas, fichajes, progresión y guardados de la carrera original. La clave de almacenamiento sigue siendo `fuera_de_guion_carrera_v4`. Los encuentros V6/V10 que ya estaban empezados mantienen su presentador, su acta y su reloj anterior.
+
+### Nuevo motor de partido
+
+- **MatchLab 0.5.8** queda incorporado como módulos JavaScript locales en `assets/matchlab/`: puedes jugar sin solicitar un motor externo ni depender de una API de terceros.
+- **2 minutos reales por parte a 1×**, con descanso obligatorio y velocidades 2×/4×, más modo de momentos importantes.
+- El balón y los 22 jugadores se mueven según la simulación; las decisiones de conducir, pasar, rematar, recuperar y aplicar ventaja surgen del motor.
+- Menos remates absurdos de larga distancia, tiros con rosca más sutiles, presión física del rival y córneres ligados a una última acción identificable.
+- **La carrera y el partido comparten el acta:** las estadísticas del protagonista solo se conceden cuando los eventos pertenecen a su futbolista. Goles y asistencias derivan del registro de goles y pases del motor, no de un sorteo adicional.
+- Las entradas desde el banquillo se hacen en una interrupción a partir del minuto de convocatoria; el entrenador contrario no tiene por qué sustituir a nadie a la vez.
+- Los partidos en curso se guardan como semilla + fotogramas deterministas + controles: al recargar se reproduce el historial y se reconstruye el motor, sin intentar serializar estructuras circulares.
+
+### Desbloqueo sencillo de roles
+
+Desde **Jugador → Especialización de roles**, las posiciones ofrecen varios roles distintos: por ejemplo, **Cazagoles / Falso 9 / Delantero avanzado** para delantero, o **Extremo / Extremo interior** para extremo.
+
+Cada rol empieza con familiaridad **Base**. Los minutos y la nota de partido aportan XP, que genera puntos. El nivel **+** cuesta 1 punto y **++** cuesta 2 adicionales; se equipan por separado. La media OVR no desbloquea familiaridades de manera automática y los atributos físicos y técnicos no se sustituyen por esos rangos. Es un sistema propio inspirado en la distinción de roles y familiaridad de FC 27, **no una reproducción de valores oficiales de EA**.
+
+### Pruebas y límites
+
+`npm test` incluye partidos enteros, suplentes, contabilización de goles, serialización, reconstrucción de partidas y compatibilidad con el motor anterior. La acción de GitHub también comprueba la experiencia completa en un navegador Chrome real, desde creación de carrera hasta pantalla de resultado.
+
+**Limitaciones:** los clubes de la carrera siguen usando plantillas ficticias y ratings editoriales. La progresión del héroe conserva los seis atributos tradicionales; los roles solo ajustan familiaridad y patrones. El motor 2D no es un juego de control directo tipo FIFA. Para máximo control antes de una actualización, utiliza **Ajustes → Exportar partida** y conserva el JSON en tu equipo.
+
+---
+
 ## 9.0 — Campo revisado y previa de alineaciones (29 octubre 2026)
 
 - Nuevo presentador de posesiones continuas (`assets/js/match-v9.js`) sobre el registro estadístico de V6, sin reiniciar partidas ni cambiar la clave de guardado.
