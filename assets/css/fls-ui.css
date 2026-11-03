@@ -128,9 +128,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @media(max-width:760px){.v4-shell{display:block;padding-bottom:73px}.v4-toolbar{height:60px;min-height:60px}.v4-main{padding:19px 13px 25px}.v4-homegrid{grid-template-columns:1fr}.v4-feature{min-height:280px}.v4-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.v4-bottomnav{background:#111e2cf7;border-top:1px solid #304659}.v4-bottomnav button.active{color:#56e3ae}.v4-viewhead h1{font-size:28px}.fls-fixture{padding:13px 8px}.fls-crest.fls-crest-lg{width:55px;height:55px;min-width:55px}.v4-bigfixture b{font-size:13px}.v4-navbtn{padding:10px}.v4-mobiletoggle{background:#172c3d;border-color:#365266}.v4-mobiletoggle button.active{background:#2c574f;color:#c8fdeb}}
 @media(max-width:390px){.fls-fixture{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}.fls-fixture b{font-size:12px}.v4-shortcuts button{padding:11px 10px}}
 
-/* Scoreboard in the existing post-match screen */
-.fls-finalscore{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;text-align:center;padding:24px 18px;margin:16px 0;border-radius:16px;background:linear-gradient(145deg,#203a4c,#162839);border:1px solid #38556b}
-.fls-finalteam{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
-.fls-finalteam strong{font-size:13px;line-height:1.4;overflow-wrap:anywhere}
-.fls-finalscore-value{font:800 clamp(25px,3.7vw,43px) Outfit,system-ui,sans-serif;color:#f5f9fc;white-space:nowrap}
-@media(max-width:760px){.fls-finalscore{gap:9px;padding:17px 9px}.fls-finalteam strong{font-size:11px}.fls-finalscore-value{font-size:25px}}
+
+/* Keep the existing result card and enrich it instead of adding another scoreboard */
+.v4-post .matchhead{background:linear-gradient(145deg,#20394b,#17293b);border:1px solid #38546a;border-radius:16px;padding:22px;margin-top:15px}
+.v4-post .scoreboard{align-items:center;gap:16px}
+.v4-post .scoreboard>div:first-child,.v4-post .scoreboard>div:last-child{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+.v4-post .scoreboard .teamname{font-size:14px;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.v4-post .scoreboard .fls-crest{flex-shrink:0}
+.v4-post .scoreboard .score{font-weight:800;color:#f4f7fb}
+@media(max-width:760px){.v4-post .matchhead{padding:14px 8px}.v4-post .scoreboard{gap:7px}.v4-post .scoreboard .teamname{font-size:11px}.v4-post .scoreboard .fls-crest{width:48px;height:48px;min-width:48px}}
