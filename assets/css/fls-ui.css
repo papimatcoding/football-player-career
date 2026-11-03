@@ -1,0 +1,139 @@
+
+/* Football Life Simulator UI V1 — visual layer only; gameplay/save untouched */
+:root{--bg:#0c1623;--bg2:#101d2b;--panel:#1b2b3c;--panel2:#223549;--line:#304356;--ink:#f4f7fb;--muted:#a4b5c7;--accent:#56e3ae;--accent2:#8bc9b7;--warn:#f3c872;--red:#ed8585;--radius:16px;--shadow:0 14px 38px #06101d35}
+html,body{background:#0c1623;color:var(--ink)}
+body:before{background:radial-gradient(ellipse at 75% -18%,#2d485c55,transparent 48%),radial-gradient(ellipse at 0% 90%,#122b3859,transparent 45%)}
+.v4-shell{background:#0c1623;grid-template-columns:232px minmax(0,1fr)}
+.v4-sidebar{background:#111e2c;border-right:1px solid #283b4f;padding:21px 15px}
+.v4-brand{gap:11px;padding:9px 7px 20px;border-color:#304356}
+.v4-brand strong{display:block;font-size:14px;line-height:1.2;letter-spacing:.4px}
+.v4-brand small{display:block;color:#8aa6ba;letter-spacing:1.2px;font-size:9px;margin-top:5px}
+.brandicon,.v4-mobbrand .brandicon{background:linear-gradient(145deg,#56e3ae,#75b9d6);color:#0d2230;box-shadow:none;transform:none;border-radius:11px;font-size:19px}
+.v4-clubline{background:#192b3b;border:1px solid #304356;align-items:center;border-radius:13px;padding:13px 10px;gap:10px}
+.v4-clubline>b,.v4-clubline b{color:#f4f7fb;font-size:12px}
+.v4-clubline small{color:#9fb2c6}
+.v4-clubline .fls-club-icon{width:40px;height:40px;min-width:40px}
+.v4-clubline>span:not(.fls-crest){display:none}
+.v4-nav{gap:3px}
+.v4-navbtn{color:#96aabc;border-radius:10px;padding:11px 12px;gap:11px;min-height:43px;font-size:12px}
+.v4-navbtn:hover{background:#1e3246;color:#edf6fa}
+.v4-navbtn.active{background:#263e4d;border:1px solid #37596a;color:#70e5ba}
+.v4-navbtn b{font-weight:700}
+.v4-navbtn span{width:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.fls-navsvg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.v4-sidetail{background:#192b3b;border:1px solid #304356;border-radius:13px}
+.v4-sidetail small,.v4-sidetail span{color:#93aabf}
+.v4-divider{background:#ffffff13}
+.v4-toolbar{background:#111e2cdd;border-bottom:1px solid #2a3d50;min-height:66px}
+.v4-breadcrumb{color:#b1bfcd}
+.v4-breadcrumb em{color:#6e8ca3}
+.v4-level{color:#56e3ae}
+.v4-tools button{background:#1c3042;border:1px solid #355067;color:#dce5ee}
+.v4-main{width:min(100%,1280px);padding:32px clamp(18px,3vw,42px) 48px}
+.v4-footer{border-top:1px solid #ffffff10;color:#7b93a8}
+.v4-viewhead h1,.v4-matchtop h1{font-weight:800;letter-spacing:-1.2px}
+.v4-viewhead p{color:#aebdca}
+.v4-em{color:#56e3ae}
+.v4-kicker,.eyebrow{color:#77cbb4;letter-spacing:1.45px}
+.v4-ovr{color:#56e3ae;background:#1a3341;border:1px solid #375568;box-shadow:none}
+.v4-ovr small{color:#95bbaf}
+.v4-panel,.v4-main .card{background:#1a2a3b;border:1px solid #2f4256;border-radius:16px;box-shadow:none}
+.v4-panel p,.v4-main .card p{color:#a9bac9}
+.v4-panel h2,.v4-panel h3{font-weight:750}
+.v4-badge,.tag,.pill{border:1px solid #36576a;background:#20394b;color:#b8eeda}
+.v4-steps{gap:10px;margin-bottom:20px}
+.v4-step{border:1px solid #2e4658;background:#182b3b;border-radius:11px;color:#91a9bd}
+.v4-step.current{background:#244637;border-color:#4d8b70;color:#ddfff2}
+.v4-step.done{background:#182e32;color:#b4dacb}
+.v4-step small{color:#8facbb}
+.btn{background:#56e3ae;color:#0a2924;border:1px solid #56e3ae;border-radius:10px;font-weight:800;box-shadow:none}
+.btn:hover{background:#86efc6}
+.btn.secondary{background:#273e50;border:1px solid #496173;color:#e8f4fa}
+.btn.secondary:hover{background:#365267}
+.btn.ghost{background:transparent;border-color:#496073;color:#d8e6ee}
+.btn.danger{background:#653d4a;border-color:#8a5260;color:#fff}
+.v4-homegrid{grid-template-columns:minmax(0,1.34fr) minmax(290px,.8fr);gap:16px}
+.v4-feature{background:linear-gradient(135deg,#20394c,#162739 72%);border:1px solid #39536a;min-height:308px;justify-content:space-between;position:relative;overflow:hidden}
+.v4-feature:after{content:'';position:absolute;width:330px;height:330px;border:1px solid #c3f3e70d;border-radius:50%;right:-85px;top:-175px;box-shadow:0 0 0 70px #c3f3e705;pointer-events:none}
+.v4-feature h2{font-size:25px}
+.v4-feature .btn{position:relative;z-index:1;align-self:flex-start;margin-top:15px}
+.fls-fixture{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:10px;align-items:center;text-align:center;padding:19px 12px;margin:8px 0;border-radius:14px;background:#0a18278c;border:1px solid #ffffff16;position:relative;z-index:1}
+.fls-fixture>div{min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px}
+.fls-fixture b{font-size:13px;line-height:1.32;font-weight:750;overflow-wrap:anywhere}
+.fls-vs{color:#9eb3c3;letter-spacing:2px;font-size:15px;font-weight:850}
+.fls-crest{display:inline-grid;place-items:center;width:50px;height:50px;min-width:50px;border-radius:12px;background:#f5f8fb10;border:1px solid #ffffff12;overflow:hidden;vertical-align:middle}
+.fls-crest img{display:block;max-width:78%;max-height:78%;width:auto;height:auto;object-fit:contain}
+.fls-crest .fls-fallback{display:none;font-size:13px;font-weight:900;color:#dceaf2;text-transform:uppercase}
+.fls-crest.fls-failed .fls-fallback{display:block}
+.fls-crest.fls-failed img{display:none}
+.fls-crest.fls-crest-lg{width:68px;height:68px}
+.fls-crest.fls-crest-sm{width:30px;height:30px;min-width:30px;border-radius:8px}
+.fls-flag{width:23px;height:16px;object-fit:cover;border-radius:2px;border:1px solid #ffffff26;vertical-align:middle}
+.fls-primaryhint{font-size:12px;line-height:1.5;color:#bacbd7;position:relative;z-index:1}
+.fls-primaryhint strong{color:#77e7bd}
+.v4-numbers{min-height:unset}
+.v4-numbergrid{grid-template-columns:repeat(2,minmax(0,1fr));margin:17px 0 19px;gap:16px}
+.v4-numbergrid b{font-size:32px;font-weight:750}
+.v4-numbergrid small,.v4-minirow{color:#9bb0c1}
+.v4-minirow b{color:#eef7fa}
+.v4-shortcuts{margin-top:17px;gap:10px}
+.v4-shortcuts button{background:#192c3d;border:1px solid #2d465a;border-radius:12px;padding:15px}
+.v4-shortcuts button:hover{border-color:#56e3ae}
+.v4-shortcuts strong{color:#e9f4fa}
+.v4-shortcuts small{color:#9cabbc}
+.fls-news-card{margin-top:16px;padding:17px 20px}
+.fls-news-card .fls-newshead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fls-news-card h3{margin:0 0 9px;font-size:15px}
+.fls-news-card p{margin:0;color:#b8c7d3}
+.fls-news-card button{border:0;background:transparent;color:#56e3ae;font-size:12px;font-weight:750}
+.v4-compactmetrics>div,.v4-nextbar,.v4-nextsub,.v4-scoutmin,.v4-drill,.v4-option{background:#1c3042;border-color:#344b5f;color:#eaf3f8}
+.v4-option:hover,.v4-option.active,.v4-drill:hover{border-color:#56e3ae;background:#254558}
+.v4-option small,.v4-drill small,.v4-compactmetrics small{color:#a6bac9}
+.v4-feedback,.v4-decisionfeedback{background:#254a445c;border-color:#467e6d;color:#ecf9f4}
+.v4-nextbar small{color:#a6b9ca}
+.v4-matchtop,.v4-viewhead{gap:16px}
+.v4-bigfixture{gap:10px;min-height:160px}
+.v4-bigfixture b{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:40%;font-size:16px}
+.v4-bigfixture strong{color:#56e3ae}
+.v4-scoreteams>b{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.v4-scoreteams span{color:#56e3ae}
+.v4-scoreteams span small{color:#90abba}
+.v4-progressline{background:#2d4b5a}
+.v4-progressline span{background:#56e3ae}
+.v4-matchfeed strong{color:#56e3ae}
+.v4-matchfeed div{color:#a7bbca}
+.v4-scoutrow b,.v4-minirow b{color:#f1f8fd}
+.v4-main .card,.v4-main .v4-panel{transition:border-color .18s ease}
+.v4-main .card .avatar{background:#2a4758;color:#d1f8eb}
+.v4-main .card .ovr{color:#56e3ae}
+.v4-main .card .skill .bar>span,.v4-main .bar>span{background:#56e3ae}
+.v4-main .profiletop{gap:14px;flex-wrap:wrap}
+.fls-clubchip{display:flex;align-items:center;gap:8px;margin:9px 0;color:#b7ccd9;font-size:12px}
+.fls-clubchip .fls-crest{width:28px;height:28px;min-width:28px}
+.fls-clubchip small{color:#98aebe}
+.v4-post{max-width:1000px}
+.v4-post .card{background:#1b2d3d}
+.v4-post .scorebig{color:#f3f8fb}
+.v4-post .sectionhead h2{font-size:28px}
+.v4-post .smallgrid .metric{background:#102335}
+.v4-bottomnav{background:#111e2cf2;border-color:#324a5e}
+.v4-bottomnav button.active{color:#56e3ae}
+.v4-bottomnav button{color:#93aabe}
+.v4-entry .app,.v4-entry{background:transparent}
+.v4-entry .brandname,.v4-mobbrand strong{font-size:13px;letter-spacing:.15px}
+.v4-entry .setuphero h1{color:#f4f7fb}
+input,select{background:#122638;border-color:#345065;color:#f3f7fa}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #56e3ae;outline-offset:3px}
+@media(max-width:1100px){.v4-shell{grid-template-columns:198px minmax(0,1fr)}.v4-main{padding:24px}.v4-homegrid{grid-template-columns:1fr 1fr}.v4-fixture{gap:5px}}
+@media(max-width:760px){.v4-shell{display:block;padding-bottom:73px}.v4-toolbar{height:60px;min-height:60px}.v4-main{padding:19px 13px 25px}.v4-homegrid{grid-template-columns:1fr}.v4-feature{min-height:280px}.v4-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.v4-bottomnav{background:#111e2cf7;border-top:1px solid #304659}.v4-bottomnav button.active{color:#56e3ae}.v4-viewhead h1{font-size:28px}.fls-fixture{padding:13px 8px}.fls-crest.fls-crest-lg{width:55px;height:55px;min-width:55px}.v4-bigfixture b{font-size:13px}.v4-navbtn{padding:10px}.v4-mobiletoggle{background:#172c3d;border-color:#365266}.v4-mobiletoggle button.active{background:#2c574f;color:#c8fdeb}}
+@media(max-width:390px){.fls-fixture{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}.fls-fixture b{font-size:12px}.v4-shortcuts button{padding:11px 10px}}
+
+
+/* Keep the existing result card and enrich it instead of adding another scoreboard */
+.v4-post .matchhead{background:linear-gradient(145deg,#20394b,#17293b);border:1px solid #38546a;border-radius:16px;padding:22px;margin-top:15px}
+.v4-post .scoreboard{align-items:center;gap:16px}
+.v4-post .scoreboard>div:first-child,.v4-post .scoreboard>div:last-child{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+.v4-post .scoreboard .teamname{font-size:14px;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+.v4-post .scoreboard .fls-crest{flex-shrink:0}
+.v4-post .scoreboard .score{font-weight:800;color:#f4f7fb}
+@media(max-width:760px){.v4-post .matchhead{padding:14px 8px}.v4-post .scoreboard{gap:7px}.v4-post .scoreboard .teamname{font-size:11px}.v4-post .scoreboard .fls-crest{width:48px;height:48px;min-width:48px}}
