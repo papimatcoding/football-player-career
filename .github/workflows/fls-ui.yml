@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'assets/js/fls-ui.js'
+      - 'assets/js/fls-week-v5.js'
+      - 'assets/css/fls-week-v5.css'
+      - 'tests/fls-week-v5.mjs'
       - 'assets/js/fls-precision-v4.js'
       - 'assets/css/fls-precision-v4.css'
       - 'tests/fls-layout-audit.mjs'
@@ -20,6 +23,7 @@ on:
       - feature/fls-ui-v2-club-crests
       - feature/fls-matchday-personality-v3
       - feature/fls-ui-v4-centering-polish
+      - feature/fls-v5-weekly-journey
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,20 +37,22 @@ jobs:
         with:
           node-version: '22'
       - name: JavaScript syntax
-        run: node --check assets/js/fls-ui.js && node --check assets/js/fls-precision-v4.js && node --check tests/fls-layout-audit.mjs && node --check assets/js/fls-personality-v3.js && node --check assets/js/fls-crest-catalog.js && node --check tests/fls-ui-smoke.mjs
+        run: node --check assets/js/fls-ui.js && node --check assets/js/fls-week-v5.js && node --check tests/fls-week-v5.mjs && node --check assets/js/fls-precision-v4.js && node --check tests/fls-layout-audit.mjs && node --check assets/js/fls-personality-v3.js && node --check assets/js/fls-crest-catalog.js && node --check tests/fls-ui-smoke.mjs
       - name: Install Playwright
         run: npm install --no-save --no-package-lock playwright@1.56.1
       - name: Install browser
         run: npx playwright install --with-deps chromium
       - name: Browser UI smoke test
         run: node tests/fls-ui-smoke.mjs
+      - name: Validate weekly game journey in Chromium
+        run: node tests/fls-week-v5.mjs
       - name: Geometry, centering and responsive visual audit
         run: node tests/fls-layout-audit.mjs
       - name: Upload UI review screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: football-life-ui-v4-layout-gallery
+          name: football-life-ui-v5-qa-gallery
           path: tests/screenshots/
           if-no-files-found: ignore
           retention-days: 7
