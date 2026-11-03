@@ -327,14 +327,16 @@ function screen(){
   <section class="v4-panel fdg-live-stadium fdg11-stadium">
    <div class="fdg11-scoreboard"><strong>${escapeHTML(home)}</strong><b id="fdg11-score">0 : 0</b><strong>${escapeHTML(away)}</strong></div>
    <div class="fdg-timebar"><b id="fdg11-clock">0'</b><div class="fdg-progress"><span id="fdg11-progress"></span></div><small id="fdg11-stage">PRIMERA PARTE</small></div>
-   <div class="fdg11-pitch-layout">
-    <div class="fdg-canvas-wrap fdg11-canvas" id="fdg11-pitch-stage">
-     <canvas id="fdg11-pitch" width="900" height="583" aria-label="Partido táctico 2D" role="img"></canvas>
+   <div class="fdg11-hud-strip">
      <div class="fdg11-performance" role="group" aria-label="Valoración y estadísticas de tu futbolista">
       <div class="fdg11-rating-ring" id="fdg11-rating-ring" style="--rating-progress:0%"><span id="fdg11-rating-value">—</span></div>
       <div class="fdg11-performance-text"><small id="fdg11-hero-status">EN EL CAMPO</small>
        <b>${escapeHTML(S.player.name)}</b><span id="fdg11-hero">0 goles · 0 asistencias</span></div>
      </div>
+   </div>
+   <div class="fdg11-pitch-layout">
+    <div class="fdg-canvas-wrap fdg11-canvas" id="fdg11-pitch-stage">
+     <canvas id="fdg11-pitch" width="900" height="583" aria-label="Partido táctico 2D" role="img"></canvas>
      <div class="fdg11-overlay" id="fdg11-overlay" hidden></div>
     </div>
    </div>
