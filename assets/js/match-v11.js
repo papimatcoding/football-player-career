@@ -8,6 +8,7 @@ import {TEAMS} from '../matchlab/teams.js?v=0.5.8';
 import {PitchRenderer} from '../matchlab/render.js?v=0.5.8';
 import {assignRole,defaultRole,eligibleRoles} from '../matchlab/roles.js?v=0.5.8';
 import {technicalProfile} from '../matchlab/attributes.js?v=0.5.8';
+import {collectPlayerMetrics,calculatePlayerRating} from './match-rating-v114.js?v=11.4';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const HERO_SLOTS={POR:0,LD:1,DFC:3,LI:4,MCD:5,MC:6,MCO:7,ED:8,DC:9,EI:10};
 const LABELS={goal:'⚽',save:'🧤',shot:'🎯',corner:'🚩',offside:'🚩',foul:'🟨',yellow:'🟨',red:'🟥',substitution:'🔄',
@@ -146,16 +147,25 @@ function updateCareer(){
   }
  }
  const now=m.stats;
- now.goals=engine.goals.filter(g=>g.side===our&&g.scorer===S.player.name).length;
- now.assists=engine.goals.filter(g=>g.side===our&&g.assist===S.player.name).length;
- now.saves=events.filter(e=>e.type==='save'&&e.player===S.player.name&&e.side===our).length;
- now.tackles=events.filter(e=>['tackle','interception','duel'].includes(e.type)&&e.player===S.player.name&&e.side===our).length;
- now.passes=events.filter(e=>e.type==='pass'&&e.player===S.player.name&&e.side===our).length;
- now.shots=events.filter(e=>e.type==='shot'&&e.player===S.player.name&&e.side===our).length;
- now.yellow=events.filter(e=>e.type==='yellow'&&e.player===S.player.name&&e.side===our).length;
- const minutes=active||l.heroEntryActual>=0?Math.max(0,Math.floor(l.clock)-(m.enter||0)):0;
- m.rating=minutes>0?clamp(6.15+now.goals*1.2+now.assists*.76+now.saves*.12+
-   now.tackles*.075+now.passes*.017+now.shots*.035,3,10):6.3;
+ const entered=l.plannedEntry===0||Number.isInteger(l.heroEntryActual);
+ const minutes=entered?Math.max(0,(m.sentOff?m.exitMinute:Math.floor(l.clock))-(m.enter||0)):0;
+ const metrics=collectPlayerMetrics(engine,{side:our,name:S.player.name,minutes,position:S.player.pos});
+ now.goals=metrics.goals;
+ now.assists=metrics.assists;
+ now.saves=metrics.saves;
+ now.tackles=metrics.tackles+metrics.interceptions+metrics.duels;
+ now.passes=metrics.passes;
+ now.shots=metrics.shots;
+ now.yellow=metrics.yellow;
+ now.passesCompleted=metrics.passesCompleted;
+ now.progressivePasses=metrics.progressivePasses;
+ now.keyPasses=metrics.keyPasses;
+ now.shotsOnTarget=metrics.shotsOnTarget;
+ now.ballLosses=metrics.ballLosses;
+ now.carryMeters=Math.round(metrics.carryMeters);
+ now.fouls=metrics.fouls;
+ now.xgWasted=Number(metrics.xgWasted.toFixed(2));
+ m.rating=calculatePlayerRating(metrics,{minutes,position:S.player.pos,goalsConceded:engine.stats[other].goals});
 }
 function buildState(){
  const m=current();if(!m)return null;
@@ -191,6 +201,24 @@ function matchStatsHTML(m){
   escapeHTML(m.home?m.opp:api.state().club.name)+'</b></div>'+
   rows.map(([label,x,y])=>'<div class="fdg11-stats-row"><strong>'+x+'</strong><span>'+label+'</span><strong>'+y+'</strong></div>').join('')+'</div>';
 }
+function playerBreakdownHTML(m){
+ const st=m.stats||{},played=m.enter>=0&&m.live?.clock>m.enter;
+ if(!played)return '<div class="fdg11-break-player"><b>Tu futbolista</b><span>No ha disputado minutos.</span></div>';
+ const entries=[
+  ['Goles',st.goals||0],['Asistencias',st.assists||0],
+  ['Pases correctos',(st.passesCompleted||0)+' / '+(st.passes||0)],
+  ['Pases progresivos',st.progressivePasses||0],['Pases clave',st.keyPasses||0],
+  ['Recuperaciones',st.tackles||0],['A puerta',st.shotsOnTarget||0],
+  ['Metros conducidos',st.carryMeters||0],['Pérdidas',st.ballLosses||0],
+  ['Ocasiones falladas',st.xgWasted||0],['Faltas',st.fouls||0],['Amarillas',st.yellow||0]
+ ];
+ return '<div class="fdg11-break-player"><div class="fdg11-break-player-title"><b>'+
+  escapeHTML(api.state().player.name)+'</b><strong>NOTA '+m.rating.toFixed(1)+'</strong></div>'+
+  '<p>Valoración según goles, pases acertados y progresivos, creación, defensa, conducción y errores.</p>'+
+  '<div class="fdg11-break-player-grid">'+
+  entries.map(([k,v])=>'<div><span>'+escapeHTML(k)+'</span><strong>'+v+'</strong></div>').join('')+
+  '</div></div>';
+}
 function updateOverlay(m){
  const l=m.live,node=document.getElementById('fdg11-overlay');if(!node)return;
  const mode=l.done?'final':l.half?'half':'live';
@@ -205,7 +233,7 @@ function updateOverlay(m){
   escapeHTML(m.home?api.state().club.name:m.opp)+' <em>'+
   (m.home?m.scoreUs:m.scoreThem)+' : '+(m.home?m.scoreThem:m.scoreUs)+'</em> '+
   escapeHTML(m.home?m.opp:api.state().club.name)+'</h2>'+
-  matchStatsHTML(m)+
+  matchStatsHTML(m)+playerBreakdownHTML(m)+
   '<button type="button" class="btn fdg11-overlay-action" data-match-action="'+(mode==='final'?'close':'continue')+'">'+
   (mode==='final'?'Ver resultado y volver a mi carrera':'▶ Reanudar la segunda parte')+'</button></div>';
 }
@@ -223,8 +251,9 @@ function refreshUI(){
  if(ring)ring.style.setProperty('--rating-progress',heroOnField?((clamp(m.rating,3,10)-3)/7*100).toFixed(1)+'%':'0%');
  put('fdg11-rating-value',heroOnField?m.rating.toFixed(1):'—');
  put('fdg11-hero-status',heroOnField?'EN EL CAMPO':m.enter<0?'NO CONVOCADO':'BANQUILLO');
- put('fdg11-hero',m.stats.goals+' goles · '+m.stats.assists+' asist. · '+
-  m.stats.passes+' pases · '+m.stats.tackles+' recuperaciones · '+m.stats.shots+' remates');
+ put('fdg11-hero',m.stats.goals+' G · '+m.stats.assists+' A · '+
+  (m.stats.passesCompleted||0)+'/'+m.stats.passes+' pases · '+
+  m.stats.tackles+' recuperaciones · '+(m.stats.keyPasses||0)+' pases clave');
  const feed=document.getElementById('fdg11-bench-feed');
  if(feed){
   feed.hidden=heroOnField;
@@ -327,14 +356,16 @@ function screen(){
   <section class="v4-panel fdg-live-stadium fdg11-stadium">
    <div class="fdg11-scoreboard"><strong>${escapeHTML(home)}</strong><b id="fdg11-score">0 : 0</b><strong>${escapeHTML(away)}</strong></div>
    <div class="fdg-timebar"><b id="fdg11-clock">0'</b><div class="fdg-progress"><span id="fdg11-progress"></span></div><small id="fdg11-stage">PRIMERA PARTE</small></div>
-   <div class="fdg11-pitch-layout">
-    <div class="fdg-canvas-wrap fdg11-canvas" id="fdg11-pitch-stage">
-     <canvas id="fdg11-pitch" width="900" height="583" aria-label="Partido táctico 2D" role="img"></canvas>
+   <div class="fdg11-hud-strip">
      <div class="fdg11-performance" role="group" aria-label="Valoración y estadísticas de tu futbolista">
       <div class="fdg11-rating-ring" id="fdg11-rating-ring" style="--rating-progress:0%"><span id="fdg11-rating-value">—</span></div>
       <div class="fdg11-performance-text"><small id="fdg11-hero-status">EN EL CAMPO</small>
        <b>${escapeHTML(S.player.name)}</b><span id="fdg11-hero">0 goles · 0 asistencias</span></div>
      </div>
+   </div>
+   <div class="fdg11-pitch-layout">
+    <div class="fdg-canvas-wrap fdg11-canvas" id="fdg11-pitch-stage">
+     <canvas id="fdg11-pitch" width="900" height="583" aria-label="Partido táctico 2D" role="img"></canvas>
      <div class="fdg11-overlay" id="fdg11-overlay" hidden></div>
     </div>
    </div>
