@@ -412,7 +412,7 @@ export class MatchEngine{
     }
     // Primary defender goes to ball-contact range, not permanently 2.4m away.
     if(!this.restart&&!attacking&&owner&&p===pressers[0]&&hypot(p.x-owner.x,p.y-owner.y)<19){
-     target={x:owner.x+dir*.55,y:owner.y};p.aiIntent='Cerrar y disputar al poseedor';
+     target={x:owner.x-dir*.70,y:owner.y};p.aiIntent='Presionar por el lado de portería y disputar';
     }
     const recovery=recovering.get(p);
     if(recovery){target={x:recovery.x,y:recovery.y};p.aiIntent=recovery.intent;}
