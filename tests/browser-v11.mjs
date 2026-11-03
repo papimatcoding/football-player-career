@@ -14,7 +14,7 @@ try{
  await page.waitForFunction(()=>Boolean(window.FDG11?.start),{timeout:20000});
  await page.locator('#name').fill('Jugador QA');
  await page.locator('#position').selectOption('DC');
- await page.evaluate(()=>window.Game.create());
+ await page.evaluate(()=>{window.Game.create();window.Game.join(0);});
  let initial=await page.evaluate(()=>({view:S.view,club:S.club.name,player:S.player.name}));
  assert.equal(initial.view,'hub');assert.equal(initial.player,'Jugador QA');
  await page.evaluate(()=>{
