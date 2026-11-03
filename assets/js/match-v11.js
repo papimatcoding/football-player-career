@@ -177,29 +177,68 @@ function paint(){
  if(canvas!==node){renderer?.observer?.disconnect();canvas=node;renderer=new PitchRenderer(node);}
  renderer.render(engine,fromFrame?{...fromFrame,alpha:clamp(accumulator/.08,0,1)}:null);
 }
+function matchStatsHTML(m){
+ const our=m.home?0:1,their=1-our,a=engine.stats[our],b=engine.stats[their];
+ const rows=[
+  ['Remates',a.shots,b.shots],['A puerta',a.onTarget,b.onTarget],
+  ['Goles esperados',a.xg.toFixed(2),b.xg.toFixed(2)],
+  ['Pases acertados',a.completed+' / '+a.passes,b.completed+' / '+b.passes],
+  ['Conducciones',a.carries,b.carries],['Córneres',a.corners,b.corners],
+  ['Faltas',a.fouls,b.fouls],['Fueras de juego',a.offsides,b.offsides]
+ ];
+ return '<div class="fdg11-break-stats"><div class="fdg11-stats-title"><b>'+
+  escapeHTML(m.home?api.state().club.name:m.opp)+'</b><span>ESTADÍSTICAS</span><b>'+
+  escapeHTML(m.home?m.opp:api.state().club.name)+'</b></div>'+
+  rows.map(([label,x,y])=>'<div class="fdg11-stats-row"><strong>'+x+'</strong><span>'+label+'</span><strong>'+y+'</strong></div>').join('')+'</div>';
+}
+function updateOverlay(m){
+ const l=m.live,node=document.getElementById('fdg11-overlay');if(!node)return;
+ const mode=l.done?'final':l.half?'half':'live';
+ node.hidden=mode==='live';
+ // Rebuilding a clicked element every animation frame prevents click from firing.
+ // Keep button nodes stable throughout the break.
+ if(node.dataset.mode===mode)return;
+ node.dataset.mode=mode;
+ if(mode==='live'){node.replaceChildren();return}
+ node.innerHTML='<div class="fdg11-modal"><p class="fdg11-modal-kicker">'+
+  (mode==='final'?'SILBATO FINAL':'DESCANSO')+'</p><h2>'+
+  escapeHTML(m.home?api.state().club.name:m.opp)+' <em>'+
+  (m.home?m.scoreUs:m.scoreThem)+' : '+(m.home?m.scoreThem:m.scoreUs)+'</em> '+
+  escapeHTML(m.home?m.opp:api.state().club.name)+'</h2>'+
+  matchStatsHTML(m)+
+  '<button type="button" class="btn fdg11-overlay-action" data-match-action="'+(mode==='final'?'close':'continue')+'">'+
+  (mode==='final'?'Ver resultado y volver a mi carrera':'▶ Reanudar la segunda parte')+'</button></div>';
+}
 function refreshUI(){
  const m=current();if(!m||!engine)return;
- const l=m.live;const put=(id,text)=>{const e=document.getElementById(id);if(e)e.textContent=text;};
- put('fdg11-clock',Math.floor(Math.min(90,l.clock))+"'");put('fdg11-score',`${m.home?m.scoreUs:m.scoreThem} : ${m.home?m.scoreThem:m.scoreUs}`);
+ const l=m.live,put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+ put('fdg11-clock',Math.floor(Math.min(90,l.clock))+"'");
+ put('fdg11-score',String(m.home?m.scoreUs:m.scoreThem)+' : '+String(m.home?m.scoreThem:m.scoreUs));
  put('fdg11-stage',l.done?'FINAL':l.half?'DESCANSO':l.clock<45?'PRIMERA PARTE':'SEGUNDA PARTE');
- put('fdg11-pause',l.paused?'▶ Continuar':'Ⅱ Pausar');
- const progress=document.getElementById('fdg11-progress');if(progress)progress.style.width=clamp(l.clock/90*100,0,100)+'%';
- const tag=document.getElementById('fdg11-events');
- if(tag)tag.innerHTML=l.feed.slice(0,11).map(e=>`<div class="fdg11-event"><b>${e.minute}'</b><span>${escapeHTML(e.text)}</span></div>`).join('');
- const stat=document.getElementById('fdg11-stats');if(stat){
-  const our=m.home?0:1,other=1-our,s=engine.stats[our],t=engine.stats[other];
-  stat.textContent=`Remates ${s.shots}–${t.shots} · Pases ${s.completed}–${t.completed} · Conducciones ${s.carries}–${t.carries} · Córneres ${s.corners}–${t.corners}`;
+ put('fdg11-pause',l.paused?'▶ Reanudar':'Ⅱ Pausar');
+ const progress=document.getElementById('fdg11-progress');
+ if(progress)progress.style.width=clamp(l.clock/90*100,0,100)+'%';
+ const heroOnField=engine.teams[m.home?0:1].some(p=>p.isHero&&!p.red);
+ const ring=document.getElementById('fdg11-rating-ring');
+ if(ring)ring.style.setProperty('--rating-progress',heroOnField?((clamp(m.rating,3,10)-3)/7*100).toFixed(1)+'%':'0%');
+ put('fdg11-rating-value',heroOnField?m.rating.toFixed(1):'—');
+ put('fdg11-hero-status',heroOnField?'EN EL CAMPO':m.enter<0?'NO CONVOCADO':'BANQUILLO');
+ put('fdg11-hero',m.stats.goals+' goles · '+m.stats.assists+' asist. · '+
+  m.stats.passes+' pases · '+m.stats.tackles+' recuperaciones · '+m.stats.shots+' remates');
+ const feed=document.getElementById('fdg11-bench-feed');
+ if(feed){
+  feed.hidden=heroOnField;
+  if(!heroOnField){
+   const tag=document.getElementById('fdg11-events');
+   if(tag)tag.innerHTML=l.feed.slice(0,10).map(e=>'<div class="fdg11-event"><b>'+
+    escapeHTML(e.minute)+"'</b><span>"+escapeHTML(e.text)+'</span></div>').join('');
+  }
  }
- const hero=document.getElementById('fdg11-hero');
- if(hero)hero.textContent=`Tu actuación · ${m.stats.goals} goles · ${m.stats.assists} asist. · ${m.stats.passes} pases · ${m.stats.tackles} recuperaciones · Nota ${m.enter<0?'—':m.rating.toFixed(1)}`;
- const overlay=document.getElementById('fdg11-overlay');
- if(overlay){
-  overlay.hidden=!(l.half||l.done);
-  overlay.innerHTML=l.done?
-   '<h2>FINAL DEL PARTIDO</h2><p>El resultado y las estadísticas proceden de las acciones reales de MatchLab.</p><button class="btn" onclick="Game.liveClose()">Volver a la carrera →</button>':
-   '<h2>DESCANSO</h2><p>Las dos partes duran aproximadamente 2 minutos cada una.</p><button class="btn" onclick="Game.halfContinue()">Empezar segunda parte →</button>';
- }
+ updateOverlay(m);
+ const controls=document.getElementById('fdg11-controls');
+ if(controls)controls.hidden=l.done||l.half;
 }
+
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stop(){if(raf){cancelAnimationFrame(raf);raf=0;}last=0;}
 function frame(now){
