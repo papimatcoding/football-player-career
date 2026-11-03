@@ -255,7 +255,8 @@ function frame(now){
    }
    if(engine.status!=='live')break;
   }
-  updateCareer();
+  // Keep DOM and hero event scans off the presentation-only frames.
+  if(count>0)updateCareer();
   if(l.half||l.done||Math.floor(l.clock/4)>l.lastSaved){
    l.lastSaved=Math.floor(l.clock/4);api.save();
   }
