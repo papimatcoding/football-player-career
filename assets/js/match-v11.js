@@ -98,7 +98,8 @@ function buildEngine(l){
   const minute=g.time/60;
   const already=g.teams[ownSide].some(p=>p.isHero);
   if(heroReserve&&!already&&minute>=l.plannedEntry&&g.subsUsed[ownSide]<5&&g.subWindowsUsed[ownSide]<3){
-   const idx=g.teams[ownSide].findIndex(p=>p.i===heroSlot&&!p.red&&!p.subOn);
+   // A teammate who replaced this position earlier can legally be substituted again.
+   const idx=g.teams[ownSide].findIndex(p=>p.i===heroSlot&&!p.red);
    const benchIdx=g.benches[ownSide].findIndex(p=>p.id===heroReserve.id);
    if(idx>=1&&benchIdx>=0){
     const old=g.teams[ownSide][idx],incoming=g.benches[ownSide].splice(benchIdx,1)[0];
@@ -111,11 +112,25 @@ function buildEngine(l){
     l.heroEntryActual=Math.ceil(minute);
    }
   }
-  // Reserve a remaining in-play substitution window for a scheduled hero entry.
-  const preserve=heroReserve&&!g.teams[ownSide].some(p=>p.isHero)&&minute<l.plannedEntry&&g.subWindowsUsed[ownSide]>=2;
-  const saved=g.subWindowsUsed[ownSide];
-  if(preserve)g.subWindowsUsed[ownSide]=3;
-  try{originalSubs();}finally{if(preserve)g.subWindowsUsed[ownSide]=saved;}
+  // Protect the future hero's starting slot plus ONE substitute and ONE window.
+  // Otherwise the AI coach may fill the position or exhaust all five changes
+  // before the scheduled real stoppage. Restore every temporary guard after
+  // the ordinary coach has made its independent decision.
+  const awaitingHero=heroReserve&&!g.teams[ownSide].some(p=>p.isHero)&&minute<l.plannedEntry;
+  const target=awaitingHero?g.teams[ownSide].find(p=>p.i===heroSlot&&!p.red):null;
+  const wasSubOn=target?.subOn;
+  const savedWindows=g.subWindowsUsed[ownSide],savedSubs=g.subsUsed[ownSide];
+  const holdWindow=awaitingHero&&savedWindows>=2;
+  const holdSub=awaitingHero&&savedSubs>=4;
+  if(target)target.subOn=true; // Excluded from the regular coach's outgoing candidates.
+  if(holdWindow)g.subWindowsUsed[ownSide]=3;
+  if(holdSub)g.subsUsed[ownSide]=5;
+  try{originalSubs();}
+  finally{
+   if(holdWindow)g.subWindowsUsed[ownSide]=savedWindows;
+   if(holdSub)g.subsUsed[ownSide]=savedSubs;
+   if(target&&g.teams[ownSide].includes(target))target.subOn=wasSubOn;
+  }
  };
  g.start();
  return g;
