@@ -141,3 +141,13 @@ La versión 10 cambia la generación de los encuentros **nuevos**: construye cad
 **QA local (Chromium, octubre de 2026):** carrera creada y continuada, alineaciones de ambos equipos, titular y suplente, alternancia entre 2D y texto, descanso y reanudación, partido completo con acta final; en una muestra de 300 simulaciones los goles promediaron alrededor de 2,5 y no se detectaron asistencias a penaltis, ni saltos entre extremos consecutivos de acciones del mismo equipo sin reanudación. El resultado varía por semilla.
 
 Para próximos avances, aislar el simulador de eventos de la interfaz y añadir pruebas automatizadas de posesión, arbitraje y anotación para evitar regresiones.
+
+## Football Life Simulator 11.2 — Arquetipos y especialización
+
+El **perfil del protagonista** permite escoger un arquetipo para su posición (p. ej., Finalizador, Falso nueve, Delantero presionante; Desbordador, Extremo interior o Creador abierto). Solo se equipa **uno** por partido y puede modificarse entre jornadas. Cada arquetipo proporciona **dos ventajas técnicas pequeñas** al motor MatchLab 2D, nunca un cambio automático del rol elegido.
+
+Los roles disponibles dependen de la posición y cada combinación **jugador + rol** dispone de su propia familiaridad: **Base, +, ++**. Ningún OVR alto concede bonificaciones. El protagonista gana XP al disputar encuentros y obtiene puntos al subir de nivel; comprar **+ cuesta 1 punto** y **++ cuesta 2 puntos**. Se puede mejorar un rol sin mejorar los demás. No hay árbol de habilidades.
+
+Se conserva la misma clave de guardado `fuera_de_guion_carrera_v4`; los perfiles previos adquieren un arquetipo predeterminado sin perder XP, puntos, roles ni progresión. Para partidos ya iniciados en V11, se respeta la simulación antigua sin aplicar retroactivamente los nuevos efectos. Los partidos nuevos guardan una instantánea del arquetipo equipado, de modo que los resultados no cambian al editar el perfil después de empezar.
+
+Las bonificaciones y arquetipos son **sistemas propios de Football Life Simulator**, no atributos oficiales de FC 27. Se inspira únicamente en el principio de familiaridad por rol específico explicado en [FC IQ, EA Sports](https://www.ea.com/pt-br/games/ea-sports-fc/fc-25/news/pitch-notes-fc-25-fc-iq-deep-dive).
