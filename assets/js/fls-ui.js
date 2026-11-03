@@ -10,7 +10,7 @@
     'FC Cartagena':'FC_Cartagena.svg','Nàstic de Tarragona':'Gimnàstic_de_Tarragona.svg',
     'Hércules CF':'Hércules.svg','Juventud Torremolinos':'Juventud_Torremolinos.svg',
     'Real Jaén':'Real_Jaén_CF.svg','Real Murcia':'Real_Murcia.svg','Real Zaragoza':'Real_Zaragoza.svg',
-    'SD Huesca':'Huesca.svg','UD Ibiza':'Ibiza.svg','CD Castellón':'Castellón.svg',
+    'SD Huesca':'Huesca.svg','CD Castellón':'Castellón.svg',
     'UD Almería':'Almería.svg','SD Eibar':'Eibar.svg','Girona FC':'Girona.svg',
     'Granada CF':'Granada.svg','Burgos CF':'Burgos_CF.svg','RCD Mallorca':'Mallorca.svg',
     'Sporting de Gijón':'Sporting_Gijón.svg','Real Oviedo':'Oviedo.svg','CE Sabadell':'Sabadell.svg',
@@ -182,17 +182,13 @@
     top.parentNode.insertBefore(chip,top.nextSibling);
   }
   function post(){
-    if(!S||S.view!=='post'||!S.lastResult||!S.match)return;
-    var post=document.querySelector('.v4-post');if(!post)return;
-    var m=S.match,r=S.lastResult;
-    var row=element('div','fls-finalscore');
-    var left=m.home?S.club.name:m.opp,right=m.home?m.opp:S.club.name;
-    function team(n){var e=element('div','fls-finalteam');e.appendChild(crest(n,true));e.appendChild(element('strong','',n));return e;}
-    row.appendChild(team(left));
-    row.appendChild(element('span','fls-finalscore-value',(m.home?r.us:r.them)+'  —  '+(m.home?r.them:r.us)));
-    row.appendChild(team(right));
-    var after=post.querySelector('.sectionhead');
-    if(after)after.insertAdjacentElement('afterend',row);
+    if(!S||S.view!=='post')return;
+    var board=document.querySelector('.v4-post .scoreboard');
+    if(!board)return;
+    board.querySelectorAll('.teamname').forEach(function(label){
+      var teamName=label.textContent.trim();
+      label.parentNode.insertBefore(crest(teamName,true),label);
+    });
   }
   function decorate(){
     rename();navigation();
