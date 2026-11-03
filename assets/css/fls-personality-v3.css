@@ -16,7 +16,7 @@
 .fls-v3-welcome .fls-v3-hello{font-weight:900;max-width:770px;font-size:clamp(28px,3.45vw,45px);letter-spacing:-1.85px;line-height:1.09;margin:9px 0 10px}
 .fls-v3-welcome .v4-em{color:#8fbfbd}
 .fls-v3-welcome p{font-size:12px;color:#adbfcc;line-height:1.5}
-.fls-v3-player-tag{display:inline-flex;align-items:center;border:1px solid #446278;padding:7px 9px;border-radius:6px;color:#cae1e5;background:#1a2d3c;font-size:9px;letter-spacing:1.35px;font-weight:800;margin-left:auto}
+.fls-v3-player-tag{display:inline-flex;align-items:center;border:1px solid #446278;padding:7px 9px;border-radius:6px;color:#cae1e5;background:#1a2d3c;font-size:9px;letter-spacing:1.35px;font-weight:800;margin-left:0;margin-top:9px}
 .fls-v3-welcome>.v4-ovr{background:linear-gradient(140deg,#163f41,#173041);border:1px solid #3c7771;min-width:69px;box-shadow:0 10px 30px #041c1d45}
 .v4-steps{margin:23px 0 18px;gap:10px}
 .v4-step{position:relative;border-radius:9px;overflow:hidden;background:#152838;border-color:#314c5e}
