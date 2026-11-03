@@ -208,7 +208,7 @@ function frame(now){
    l.lastSaved=Math.floor(l.clock/4);api.save();
   }
  }
- paint();if(now-(l.lastRendered||0)>250){refreshUI();l.lastRendered=now;}
+ paint();if(l.half||l.done||now-(l.lastRendered||0)>250){refreshUI();l.lastRendered=now;}
  if(l.error){putError(l.error);stop();return;}
  raf=requestAnimationFrame(frame);
 }
