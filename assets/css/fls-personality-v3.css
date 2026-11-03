@@ -1,0 +1,135 @@
+/* Football Life Simulator 3.0 | Sports editorial language, stadium atmosphere, no extra UI complexity */
+:root{--fls-paper:#f3f8fc;--fls-dim:#9eafbf;--fls-soft:#152739;--fls-club-primary:#4b839b;--fls-club-secondary:#4e7289}
+.v4-main{--fls-ease:cubic-bezier(.2,.75,.2,1)}
+.v4-main .v4-panel,.v4-main .card{border-color:#344c60}
+.v4-sidebar{border-right:1px solid #294154;background:linear-gradient(155deg,#152738 0%,#101c2b 75%)}
+.v4-brand{position:relative}
+.v4-brand strong{letter-spacing:.35px;font-weight:900}
+.v4-brand small{display:block;font-size:9px;letter-spacing:1.25px}
+.fls-v3-brandline{font-size:8px!important;display:block;letter-spacing:1.6px;color:#7baeb4!important;margin-top:7px}
+.v4-clubline{background:linear-gradient(115deg,color-mix(in srgb,var(--fls-club-primary) 16%,#172838),#17293b 72%);border-color:color-mix(in srgb,var(--fls-club-primary) 38%,#3a5062)}
+.v4-toolbar{gap:12px}
+.fls-v3-issue{display:inline-flex;font-size:9px;letter-spacing:1.45px;font-weight:800;color:#789aac;border-left:1px solid #355062;padding-left:16px;white-space:nowrap}
+.fls-v3-eyebrow{display:block;color:#80d9be;font-size:10px;font-weight:900;letter-spacing:1.5px;line-height:1.45}
+.fls-v3-welcome{position:relative;align-items:center;padding:2px 0 0}
+.fls-v3-welcome .v4-kicker{color:#8aa9b8;font-size:10px;letter-spacing:2px}
+.fls-v3-welcome .fls-v3-hello{font-weight:900;max-width:770px;font-size:clamp(28px,3.45vw,45px);letter-spacing:-1.85px;line-height:1.09;margin:9px 0 10px}
+.fls-v3-welcome .v4-em{color:#8fbfbd}
+.fls-v3-welcome p{font-size:12px;color:#adbfcc;line-height:1.5}
+.fls-v3-player-tag{display:inline-flex;align-items:center;border:1px solid #446278;padding:7px 9px;border-radius:6px;color:#cae1e5;background:#1a2d3c;font-size:9px;letter-spacing:1.35px;font-weight:800;margin-left:auto}
+.fls-v3-welcome>.v4-ovr{background:linear-gradient(140deg,#163f41,#173041);border:1px solid #3c7771;min-width:69px;box-shadow:0 10px 30px #041c1d45}
+.v4-steps{margin:23px 0 18px;gap:10px}
+.v4-step{position:relative;border-radius:9px;overflow:hidden;background:#152838;border-color:#314c5e}
+.v4-step.current{background:#21453c;border-color:#43866c;box-shadow:inset 0 0 0 1px #ffffff08}
+.v4-step.current:before{content:'';position:absolute;inset:0 auto 0 0;width:3px;background:#56e3ae}
+.v4-step.done{background:#192e36;border-color:#35544b}
+.v4-step b{font-size:11px}
+.v4-step small{font-size:10px}
+.v4-homegrid{grid-template-columns:minmax(0,1.28fr) minmax(275px,.75fr);align-items:stretch;gap:17px}
+.v4-feature.fls-v3-matchday{--c1:var(--fls-club-primary);--c2:var(--fls-club-secondary);display:flex;flex-direction:column;min-height:430px;padding:23px 26px 24px;border:1px solid color-mix(in srgb,var(--c2) 30%,#30495e);border-radius:18px;background:
+radial-gradient(ellipse at 87% 11%,color-mix(in srgb,var(--c1) 34%,transparent),transparent 54%),
+radial-gradient(ellipse at 8% 88%,color-mix(in srgb,var(--c2) 19%,transparent),transparent 58%),
+linear-gradient(152deg,#203748 0%,#14293a 64%,#102436 100%);isolation:isolate;overflow:hidden;box-shadow:0 22px 60px #050e1938}
+.v4-feature.fls-v3-matchday:before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.75;background:
+ radial-gradient(ellipse 67% 20% at 50% 100%,#0a1a2555 20%,transparent 85%),
+ repeating-linear-gradient(93deg,transparent 0 18px,#ffffff04 19px 20px),
+ radial-gradient(ellipse 130% 38% at 50% 0%,transparent 55%,#a7c3cb0c 55.2%,transparent 56%,transparent 61%,#98aeb407 61.3%,transparent 62%);}
+.v4-feature.fls-v3-matchday:after{content:'';position:absolute;z-index:0;pointer-events:none;width:440px;height:185px;bottom:-143px;right:-100px;border:1px solid #d0e4ed1d;border-radius:50%;transform:rotate(-13deg);box-shadow:0 0 0 24px #ffffff04,0 0 0 56px #ffffff03;opacity:.8}
+.fls-v3-matchday>*{position:relative;z-index:1}
+.fls-v3-stamp{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:12px;border-bottom:1px solid #ffffff1d;font-size:9px;letter-spacing:1.7px;font-weight:900;color:#a6cad1;text-transform:uppercase}
+.fls-v3-stamp span:last-child{color:#cbd8e5;font-size:9px}
+.fls-v3-matchday .v4-kicker{font-size:9px;letter-spacing:1.6px;margin:18px 0 4px;color:#bdd5d7}
+.fls-v3-matchday h2{max-width:580px;font-size:clamp(19px,2.1vw,28px);font-weight:850;letter-spacing:-.85px;line-height:1.14;min-height:38px;margin:4px 0 10px}
+.fls-v3-versus.fls-fixture{display:grid;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);align-items:center;gap:11px;text-align:center;margin:4px 0 16px;padding:17px 14px;background:linear-gradient(180deg,#0c1e30be,#0f2132bb);border:1px solid #a2c2cf20;border-radius:13px;box-shadow:inset 0 1px 0 #fff0}
+.fls-v3-versus>div{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.fls-v3-versus .fls-crest{width:67px;height:67px;min-width:67px;border:0;border-radius:9px;background:transparent}
+.fls-v3-versus .fls-crest img{max-width:91%;max-height:91%;filter:drop-shadow(0 6px 7px #040d1888)}
+.fls-v3-versus .fls-crest.fls-failed{background:#ffffff08;border:1px solid #ffffff16}
+.fls-v3-versus b{max-width:100%;font-size:14px;line-height:1.2;letter-spacing:-.15px}
+.fls-v3-team-label{font-size:8px!important;line-height:1.2;color:#86a9ba;letter-spacing:1.8px;font-weight:900}
+.fls-v3-versus .fls-vs{display:flex;flex-direction:column;align-items:center;font-size:22px;letter-spacing:-.5px;color:#dbece9;gap:7px}
+.fls-v3-versus .fls-vs small{display:grid;place-items:center;border:1px solid #467381;border-radius:4px;color:#91bbbf;font-size:9px;width:24px;height:20px;letter-spacing:0}
+.fls-v3-matchday .fls-v3-agenda{margin-top:auto;margin-bottom:15px;background:#091b2a70;border-left:2px solid #6ec4b7;padding:10px 12px;border-radius:0 6px 6px 0;color:#b1c6d3;font-size:11px;max-width:530px}
+.fls-v3-matchday .fls-v3-agenda strong{color:#96e6ce;display:inline;font-size:10px}
+.fls-v3-maincta.btn{min-height:45px;padding:12px 15px;border-radius:8px;font-size:11px;letter-spacing:1.05px;font-weight:900;display:inline-flex;align-items:center;justify-content:space-between;gap:17px;align-self:flex-start;min-width:208px;transition:transform .18s ease,background .18s ease}
+.fls-v3-maincta.btn:hover{transform:translateY(-2px)}
+.fls-v3-cta-arrow{font-size:20px;font-weight:400;line-height:1}
+.fls-v3-season-stats{position:relative;background:linear-gradient(154deg,#1c3041,#172b3b);border:1px solid #365166}
+.fls-v3-season-stats .v4-kicker{font-size:10px}
+.fls-v3-season-stats .v4-numbergrid{gap:19px 15px;margin:18px 0 22px}
+.fls-v3-season-stats .v4-numbergrid>div{border-bottom:1px solid #ffffff10;padding-bottom:14px}
+.fls-v3-season-stats .v4-numbergrid b{font-weight:850;color:#f3faff;letter-spacing:-1.5px}
+.fls-v3-season-stats .v4-numbergrid small{font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#8aa4b4}
+.fls-v3-season-stats .v4-minirow{font-size:11px}
+.fls-v3-stats-footer{border-top:1px solid #ffffff16;padding-top:13px;margin-top:22px;font-size:8px;font-weight:900;letter-spacing:1.5px;color:#7396a9}
+.fls-v3-narrative{display:flex;gap:22px;align-items:center;margin:17px 0 10px;padding:18px 21px;background:linear-gradient(110deg,#1a3345 0%,#152839 80%);border:1px solid #365367;border-left:3px solid #56e3ae;border-radius:11px}
+.fls-v3-narrative-num{font-weight:850;font-size:42px;letter-spacing:-2px;color:#6fbbae;line-height:1;opacity:.7;min-width:56px}
+.fls-v3-narrative-copy h3{margin:5px 0;font-size:14px;font-weight:800;color:#f2f7fb;line-height:1.27}
+.fls-v3-narrative-copy p{margin:0;color:#a2b9c7;font-size:11px;line-height:1.5}
+.fls-v3-narrative-medical{border-left-color:#e4a77e}
+.fls-v3-narrative-medical .fls-v3-narrative-num{color:#e7af89}
+.fls-v3-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.fls-v3-shortcuts button{position:relative;text-align:left;display:flex;flex-direction:column;gap:7px;min-height:76px;border:1px solid #344c60;background:#182b3b;border-radius:10px;padding:15px 14px;transition:transform .18s ease,border-color .18s ease}
+.fls-v3-shortcuts button:hover{transform:translateY(-2px);border-color:#69bda5;background:#213a4a}
+.fls-v3-shortcuts button:after{content:'↗';position:absolute;right:12px;top:12px;font-size:16px;color:#6ea7a8}
+.fls-v3-shortcuts strong{font-size:12px;font-weight:850;letter-spacing:.1px}
+.fls-v3-shortcuts small{font-size:10px}
+.fls-v3-frontpage{margin-top:12px;background:#172a3b;border-left:3px solid var(--fls-club-secondary);padding:18px 21px}
+.fls-v3-news-label{display:block;margin-bottom:8px;font-size:9px;letter-spacing:1.8px;font-weight:900;color:#7eabae}
+.fls-v3-frontpage .fls-newshead{gap:16px;align-items:center}
+.fls-v3-frontpage .fls-newshead h3{font-size:16px;margin-bottom:7px;font-weight:850;letter-spacing:-.4px}
+.fls-v3-frontpage>p{font-size:12px;line-height:1.65;max-width:850px}
+.fls-v3-pagehead{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:135px;margin-bottom:18px;padding:22px 25px;background:
+radial-gradient(ellipse at 90% 0%,color-mix(in srgb,var(--fls-club-primary) 28%,transparent),transparent 61%),
+linear-gradient(145deg,#1e3446,#16283a);border:1px solid #365267;border-radius:15px;position:relative;overflow:hidden}
+.fls-v3-pagehead h1{font-size:clamp(23px,2.7vw,34px);margin:7px 0 8px;color:#f2f8fb;letter-spacing:-1.15px;line-height:1.1;font-weight:850}
+.fls-v3-pagehead p{font-size:12px;line-height:1.55;color:#b2c9d3;margin:0}
+.fls-v3-pagehead:after{content:'';position:absolute;width:260px;height:260px;border-radius:50%;border:1px solid #ffffff10;top:-180px;right:-100px;pointer-events:none}
+.fls-v3-player-number{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:96px;border-left:1px solid #ffffff24;padding-left:23px;color:#f3faff}
+.fls-v3-player-number small{font-weight:850;letter-spacing:2px;font-size:9px;color:#a0bfca}
+.fls-v3-player-number b{font-size:58px;line-height:1;font-weight:900;letter-spacing:-3px;color:#b4e6dd}
+.fls-v3-dossier{position:relative}
+.fls-v3-dossier-badge{display:flex;align-items:center;gap:9px;padding:10px 12px;margin:14px 0 0;border:1px solid #ffffff16;background:#112535a9;border-radius:8px;max-width:max-content}
+.fls-v3-dossier-badge .fls-v3-crest{width:27px;height:27px}
+.fls-v3-dossier-badge span:last-child{font-size:10px;font-weight:850;letter-spacing:1px;color:#c1d8de}
+.fls-v3-crest{width:40px;height:40px;min-width:40px;display:grid;place-items:center;border:1px solid #ffffff20;border-radius:10px;background:#ffffff0d;overflow:hidden;color:#b6e8dd;font-size:11px;font-weight:900;letter-spacing:1px}
+.fls-v3-crest img{display:block;max-width:82%;max-height:82%;object-fit:contain;filter:drop-shadow(0 3px 4px #0005)}
+.fls-v3-crest-lg{width:62px;height:62px;min-width:62px}
+.fls-v3-attributes{background:linear-gradient(160deg,#1a3043,#172b3b)}
+.fls-v3-skillhero{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:2px 12px;padding:14px 16px;margin:15px 0;background:#12313a;border:1px solid #3c696c;border-radius:10px}
+.fls-v3-skillhero .fls-v3-eyebrow{grid-column:1;grid-row:1;font-size:9px}
+.fls-v3-skillhero strong{grid-column:1;grid-row:2;font-size:17px;color:#eefaf4}
+.fls-v3-skillhero b{grid-column:2;grid-row:1/span 2;font-size:30px;color:#70eac2;font-weight:900}
+.fls-v3-agent-head{min-height:156px}
+.fls-v3-agent-radar{display:flex;align-items:center;gap:11px;border-left:1px solid #ffffff24;padding-left:20px;max-width:305px;min-width:0;position:relative;z-index:1}
+.fls-v3-agent-radar .fls-v3-crest{flex-shrink:0;background:#ffffff18}
+.fls-v3-agent-radar>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+.fls-v3-agent-radar strong{font-weight:850;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.fls-v3-agent-radar small{color:#8df3c5;font-size:11px}
+.fls-v3-agent-empty{display:flex;flex-direction:column;gap:5px;max-width:210px;padding:14px 15px;border:1px solid #547487;background:#142f3d;border-radius:9px}
+.fls-v3-agent-empty strong{font-size:10px;color:#c7dfde;letter-spacing:1px}
+.fls-v3-agent-empty small{font-size:11px;color:#8faabc}
+.fls-v3-newsroom-brand{padding:26px 29px;margin-bottom:22px;border-radius:13px;border:1px solid #50677b;background:
+linear-gradient(90deg,#1e3948df 0%,#193145ee 65%,#14283bef 100%),
+repeating-linear-gradient(-55deg,transparent 0 13px,#9bb9be10 14px 15px)}
+.fls-v3-newsroom-brand h2{font-size:clamp(29px,5vw,51px);font-weight:900;letter-spacing:-2px;line-height:1.12;margin:6px 0 5px}
+.fls-v3-newsroom-brand p{margin:0;font-size:12px;color:#b3c5ce}
+.fls-v3-story-item{position:relative;padding:17px 13px 17px 51px!important;margin-bottom:2px;border-bottom:1px solid #ffffff18}
+.fls-v3-story-item .fls-v3-story-index{position:absolute;top:15px;left:8px;font-size:16px;font-weight:900;color:#6bbca8}
+.fls-v3-story-item p{line-height:1.6;font-size:12px}
+.fls-v3-season-hero{display:flex;align-items:center;gap:17px;padding:21px 24px;margin-bottom:20px;border:1px solid #416079;background:linear-gradient(120deg,#243f51,#142b3d);border-radius:12px}
+.fls-v3-season-hero>.fls-v3-crest{flex-shrink:0}
+.fls-v3-season-hero h2{font-size:21px;line-height:1.3;letter-spacing:-.55px;margin:3px 0 4px}
+.fls-v3-season-hero p{font-size:12px;color:#a9c0ca;line-height:1.4;margin:0}
+.fls-v3-post-report{margin:13px 0 16px;padding:17px 21px;background:linear-gradient(120deg,#1a3343,#172e3d);border:1px solid #3b576b;border-left:3px solid #56e3ae;border-radius:10px;display:flex;flex-direction:column;gap:7px}
+.fls-v3-post-report strong{font-size:20px;line-height:1.2;letter-spacing:-.4px}
+.fls-v3-post-report small{color:#a4bfca;font-size:11px}
+.fls-v3-draft-hero{position:relative;padding-top:8px}
+.fls-v3-draft-hero>.fls-v3-eyebrow{margin-bottom:7px;color:#72dbb8}
+.fls-v3-draft-hero h1{font-size:clamp(30px,4.8vw,55px);letter-spacing:-1.7px;line-height:1.03}
+@media(min-width:1280px){.v4-main{padding-top:37px}.v4-feature.fls-v3-matchday{min-height:444px}}
+@media(max-width:1100px){.fls-v3-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.v4-homegrid{grid-template-columns:minmax(0,1fr) minmax(250px,.78fr)}.fls-v3-matchday h2{font-size:21px}.fls-v3-versus .fls-crest{width:53px;height:53px;min-width:53px}}
+@media(max-width:900px){.v4-homegrid{grid-template-columns:1fr}.v4-feature.fls-v3-matchday{min-height:395px}.fls-v3-season-stats .v4-numbergrid{grid-template-columns:repeat(4,minmax(0,1fr))}.fls-v3-stats-footer{margin-top:13px}}
+@media(max-width:760px){.fls-v3-issue{display:none}.fls-v3-welcome{gap:9px;align-items:flex-start}.fls-v3-welcome .fls-v3-hello{font-size:clamp(26px,6vw,34px)}.fls-v3-player-tag{display:none}.v4-steps{margin:17px 0 13px;gap:6px}.v4-step{min-width:0}.v4-step b{font-size:10px}.v4-feature.fls-v3-matchday{min-height:400px;padding:17px 15px 18px}.fls-v3-stamp span:last-child{font-size:8px;letter-spacing:.6px}.fls-v3-matchday h2{font-size:22px;min-height:auto}.fls-v3-versus.fls-fixture{grid-template-columns:minmax(0,1fr) 43px minmax(0,1fr);padding:14px 9px;gap:6px}.fls-v3-versus .fls-crest{width:56px;height:56px;min-width:56px}.fls-v3-versus b{font-size:12px}.fls-v3-versus .fls-vs{font-size:17px}.fls-v3-maincta.btn{width:100%;max-width:none}.fls-v3-season-stats .v4-numbergrid{grid-template-columns:repeat(2,minmax(0,1fr))}.fls-v3-narrative{padding:14px 13px;gap:11px}.fls-v3-narrative-num{font-size:31px;min-width:36px}.fls-v3-narrative-copy h3{font-size:12px}.fls-v3-shortcuts{gap:8px}.fls-v3-shortcuts button{padding:12px 10px;min-height:74px}.fls-v3-frontpage{padding:15px 16px}.fls-v3-pagehead{padding:17px 15px;min-height:118px;gap:10px}.fls-v3-pagehead h1{font-size:24px}.fls-v3-player-number{min-width:53px;padding-left:8px}.fls-v3-player-number b{font-size:37px;letter-spacing:-2px}.fls-v3-agent-head{flex-direction:column;align-items:stretch}.fls-v3-agent-radar{max-width:none;border:1px solid #ffffff19;border-radius:8px;padding:8px 11px;background:#ffffff08}.fls-v3-agent-radar .fls-v3-crest{width:40px;height:40px;min-width:40px}.fls-v3-newsroom-brand{padding:20px 18px}.fls-v3-post-report{padding:14px}.fls-v3-post-report strong{font-size:16px}.fls-v3-season-hero{padding:15px;gap:12px}.fls-v3-season-hero h2{font-size:17px}}
+@media(max-width:390px){.fls-v3-versus .fls-crest{width:47px;height:47px;min-width:47px}.fls-v3-versus b{font-size:11px}.fls-v3-versus.fls-fixture{padding:11px 6px}.fls-v3-narrative-num{display:none}.fls-v3-shortcuts strong{font-size:11px}.fls-v3-stamp{gap:3px}}
+@media(prefers-reduced-motion:reduce){.fls-v3-shortcuts button,.fls-v3-maincta.btn{transition:none}.fls-v3-shortcuts button:hover,.fls-v3-maincta.btn:hover{transform:none}}
