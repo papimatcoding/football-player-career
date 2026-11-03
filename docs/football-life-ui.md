@@ -85,3 +85,24 @@ Las canteras \`Sub-19\` usan el SVG del club matriz. SVG de Future FC utiliza el
 El workflow \`fls-ui.yml\` ejecuta las pruebas de \`tests/fls-ui-smoke.mjs\` en Chromium y adjunta una galería temporal de capturas (inicio, academias, mercado, jugador, noticias, móvil). El workflow V11 comprueba además la continuidad del motor 2D MatchLab. No fusionar una revisión sin ambas validaciones correctas.
 
 **Compatibilidad:** se mantiene la clave de guardado \`fuera_de_guion_carrera_v4\`. No se toca \`core.js\`, \`match-v11.js\` ni su integración. Los titulares de ambiente no añaden resultados, rumores ni noticias falsas a la simulación.
+
+## UI V4 — Precision Layout & Visual QA (3 noviembre 2026)
+
+**Objetivo:** una retícula consistente para todas las pantallas, centrados reales, controles accesibles y adaptación a monitores, tabletas y móviles.
+
+### Diseño
+- CSS de precisión: assets/css/fls-precision-v4.css. Unifica anchura máxima de 1248 px, márgenes fluidos, tipografía y espaciado de tarjetas, navegación, entrenamiento, vida, jugador, mercado, noticias, tablas y resultados.
+- Marcadores y enfrentamientos con columnas simétricas: el VS o resultado se centra geométricamente entre los escudos. Se conserva el terreno de juego 2D de MatchLab V11.2.
+- Barra móvil de seis acciones con botones amplios, marca corta Football Life y ajustes para 320, 375, 768, 1024 y 1920 px.
+- Adaptador de UI: assets/js/fls-precision-v4.js. Incluye aria-current, aria-label y estados semánticos del progreso del encuentro, sin cambiar el estado de carrera.
+- Preferencia de movimiento reducido y estilo de foco visible.
+
+### Compatibilidad
+- Sin cambios en core.js, match-v11.js, match-v11-launch.js, role-progression-v11.js ni en la clave de guardado fuera_de_guion_carrera_v4.
+- Escudos SVG y personalidad visual V3 conservados.
+
+### QA
+- 11 pruebas funcionales de carrera y UI: tests/fls-ui-smoke.mjs.
+- **61 auditorías geométricas** con Chromium en tests/fls-layout-audit.mjs: comprueban desbordamientos del documento, centrado del área principal, de enfrentamientos y de marcadores, y límites horizontales de contenedores importantes en 10 resoluciones de 320 a 1920 px.
+- Capturas automáticas de alta y baja resolución, fichero layout-report.json y reportes de error en el artefacto temporal football-life-ui-v4-layout-gallery de GitHub Actions (retención siete días).
+- Las pruebas confirman alineación técnica, pero no sustituyen una revisión humana de las capturas para valorar la calidad artística.
