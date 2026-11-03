@@ -100,7 +100,8 @@
    const heading=welcome.querySelector('h1');
    if(heading){heading.classList.add('fls-v3-hello');const part=heading.querySelector('.v4-em');if(part)part.textContent='. Todo empieza aquí.';}
    const meta=node('span','fls-v3-player-tag',(S.stage==='academy'?'PROMESA DE CANTERA':'FUTBOLISTA PROFESIONAL')+'  ·  '+p.pos);
-   welcome.appendChild(meta);
+   const intro=welcome.querySelector(':scope > div');
+   (intro||welcome).appendChild(meta);
   }
   const panel=document.querySelector('.v4-feature');if(!panel)return;
   panel.classList.add('fls-v3-matchday');
