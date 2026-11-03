@@ -4,7 +4,7 @@ import {defaultRole,assignRole,eligibleRoles,roleTarget,roleBonus,safeOutlet,esc
 import {isClearChance,passingLane,supportTarget} from './decisions.js?v=0.5.8';
 import {combinationRate,chooseCombination,combinationValid,returnPassViable,combinationTarget,coverPassingLane} from './combinations.js?v=0.5.8';
 import {resetCollective,onPossessionChange,getCollectivePhase,pressingAssignments,collectiveTarget} from './collective.js?v=0.5.8';
-import {aimPass,interceptSegment,defensiveLaneTargets,flightAnticipationTarget,fieldExit} from './ball-intelligence.js?v=0.5.8';
+import {aimPass,interceptSegment,defensiveLaneTargets,flightAnticipationTarget,fieldExit,safeForwardDribble} from './ball-intelligence.js?v=0.5.8';
 import {decisionDelay,orientedFirstTouch,findSpaceRun} from './tempo-control.js?v=0.5.8';
 import {recoveryAssignments,contestedRecovery} from './duels.js?v=0.5.8';
 import {substitutionPlan} from './coach.js?v=0.5.8';
@@ -430,7 +430,19 @@ export class MatchEngine{
      if(dd>.5){const step=Math.min(dd,dt*5.4),dx=(dest.x-owner.x)/dd*step,dy=(dest.y-owner.y)/dd*step;
       owner.x+=dx;owner.y+=dy;if(dx*dir>0)this.stats[owner.side].forwardCarryMeters+=dx*dir;
      }else owner.aiEscape=null}
-   if(!owner.aiEscape&&remaining>12&&pressure>2.5){owner.x=clamp(owner.x+dir*dt*(2.0+owner.rating/90),2,103);owner.y=clamp(owner.y+Math.sin(this.realTime*.8+owner.i)*dt*.34,2,66)}
+   if(!owner.aiEscape&&remaining>12&&pressure>2.5){
+     const lane=safeForwardDribble(this,owner);
+     if(lane){
+      const dx=lane.x-owner.x,dy=lane.y-owner.y,d=Math.hypot(dx,dy);
+      const step=Math.min(d,dt*(2.0+owner.rating/90));
+      owner.x=clamp(owner.x+dx/d*step,2,103);
+      owner.y=clamp(owner.y+dy/d*step,2,66);
+     }else{
+      // A blocked lane is a reason to release the ball quickly, not collide
+      // with the nearest defender or send another random backward pass.
+      this.decision=Math.min(this.decision,.13);
+     }
+    }
    if(pressure<1.95&&this.rng()<dt*(.20+Math.max(0,front.skills.tackle-70)*.005)){
     this.ball.x=owner.x;this.ball.y=owner.y;
     if(this.rng()<.16)this.foul(owner,front);
