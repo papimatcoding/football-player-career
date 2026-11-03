@@ -55,6 +55,7 @@ try{
    assert.equal(await page.evaluate(()=>S.view),'draft');
    assert.equal(await page.evaluate(()=>S.player.nationality),'Dinamarca');
    assert.equal(await page.locator('.fls-academy-offer .fls-club-title .fls-crest').count(),3,'All academy proposals need club crests');
+   await page.screenshot({path:screenshots+'/academies.png',fullPage:true});
    await page.evaluate(()=>Game.join(0));
    assert.equal(await page.evaluate(()=>S.view),'hub');
    assert.equal(await page.evaluate(()=>S.player.name),'Test FLS');
@@ -82,6 +83,7 @@ try{
    assert.equal(await page.locator('.fls-v3-agent-radar .fls-v3-crest').count(),1,'Scouting spotlight crest missing');
    const scouts=await page.locator('.scout-item').count();
    if(scouts>0)assert.equal(await page.locator('.scout-item .fls-scout-title .fls-crest').count(),scouts);
+   await page.screenshot({path:screenshots+'/market.png',fullPage:true});
    await page.evaluate(()=>Game.tab('hub'));
  });
  await check('Editorial newsroom and dynamic matchday story',async()=>{
@@ -89,6 +91,7 @@ try{
    assert.match(await page.locator('.fls-v3-narrative').innerText(),/forma física|recuperación/i);
    await page.evaluate(()=>{S.player.fitness=95;render();Game.tab('news');});
    assert.equal(await page.locator('.fls-v3-newsroom-brand').count(),1);
+   await page.screenshot({path:screenshots+'/news.png',fullPage:true});
    await page.evaluate(()=>Game.tab('hub'));
    assert.equal(await page.locator('.fls-v3-matchday .fls-v3-maincta').count(),1);
  });
@@ -99,6 +102,7 @@ try{
    assert.match(await page.locator('.fls-nationality').innerText(),/Dinamarca/);
    assert.equal(await page.locator('.fls-v3-player-head').count(),1,'Player dossier masthead missing');
    assert.equal(await page.locator('.fls-v3-skillhero').count(),1,'Player attribute focus missing');
+   await page.screenshot({path:screenshots+'/player.png',fullPage:true});
    await page.evaluate(()=>Game.tab('hub'));
  });
  await check('Career phases still use existing game actions',async()=>{
