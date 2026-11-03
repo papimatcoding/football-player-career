@@ -184,6 +184,8 @@
   function player(){
     if(!S||S.view!=='hub'||activeTab!=='player')return;
     var top=document.querySelector('.v4-main .profiletop');if(!top)return;
+    top.closest('.card')?.classList.add('fls-profile-card');
+    top.closest('.cols2')?.classList.add('fls-profile-grid');
     var chip=element('div','fls-clubchip');
     chip.appendChild(crest(S.club.name,false));
     var f=flag(S.club.country);if(f)chip.appendChild(f);
@@ -295,6 +297,15 @@
     draftOffers();
     var shell=document.querySelector('.v4-shell');
     if(shell)shell.dataset.flsView=S.view;
+    var main=document.querySelector('.v4-main');
+    if(main){
+      main.classList.toggle('fls-player-view',S.view==='hub'&&activeTab==='player');
+      main.classList.toggle('fls-market-view',S.view==='hub'&&activeTab==='agent');
+      main.classList.toggle('fls-league-view',S.view==='hub'&&activeTab==='league');
+      main.classList.toggle('fls-history-view',S.view==='hub'&&activeTab==='history');
+      main.classList.toggle('fls-season-view',S.view==='season');
+      main.classList.toggle('fls-match-view',S.view==='match');
+    }
     clubline();home();fixtures();player();post();leagueBadges();marketBadges();seasonBadges();historyBadges();liveBadges();
   }
   var original=render;
