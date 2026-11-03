@@ -98,7 +98,7 @@
    welcome.classList.add('fls-v3-welcome');
    const kicker=welcome.querySelector('.v4-kicker');if(kicker)kicker.textContent='CAPÍTULO '+String(S.seasonNo).padStart(2,'0')+'  /  '+S.year+'—'+(S.year+1);
    const heading=welcome.querySelector('h1');
-   if(heading){heading.classList.add('fls-v3-hello');const part=heading.querySelector('.v4-em');if(part)part.textContent='. Todo empieza aquí.';}
+   if(heading){heading.classList.add('fls-v3-hello');const part=heading.querySelector('.v4-em');if(part)part.textContent=S.round===0?'. Todo empieza aquí.':'. El siguiente capítulo.';}
    const meta=node('span','fls-v3-player-tag',(S.stage==='academy'?'PROMESA DE CANTERA':'FUTBOLISTA PROFESIONAL')+'  ·  '+p.pos);
    const intro=welcome.querySelector(':scope > div');
    (intro||welcome).appendChild(meta);
