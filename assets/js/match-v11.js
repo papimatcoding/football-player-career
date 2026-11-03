@@ -122,6 +122,10 @@ function buildEngine(l){
   const savedWindows=g.subWindowsUsed[ownSide],savedSubs=g.subsUsed[ownSide];
   const holdWindow=awaitingHero&&savedWindows>=2;
   const holdSub=awaitingHero&&savedSubs>=4;
+  // The ordinary coach must not select the protagonist as an automatic
+  // bench replacement before the career's scheduled entry minute.
+  const reservedBenchIndex=awaitingHero?g.benches[ownSide].indexOf(heroReserve):-1;
+  if(reservedBenchIndex>=0)g.benches[ownSide].splice(reservedBenchIndex,1);
   if(target)target.subOn=true; // Excluded from the regular coach's outgoing candidates.
   if(holdWindow)g.subWindowsUsed[ownSide]=3;
   if(holdSub)g.subsUsed[ownSide]=5;
@@ -130,6 +134,7 @@ function buildEngine(l){
    if(holdWindow)g.subWindowsUsed[ownSide]=savedWindows;
    if(holdSub)g.subsUsed[ownSide]=savedSubs;
    if(target&&g.teams[ownSide].includes(target))target.subOn=wasSubOn;
+   if(reservedBenchIndex>=0)g.benches[ownSide].splice(Math.min(reservedBenchIndex,g.benches[ownSide].length),0,heroReserve);
   }
  };
  g.start();
