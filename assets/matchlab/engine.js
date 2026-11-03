@@ -430,7 +430,7 @@ export class MatchEngine{
    const remaining=Math.abs(this.goalX(owner.side)-owner.x);
    if(owner.aiEscape){const dest=owner.aiEscape,dd=hypot(dest.x-owner.x,dest.y-owner.y);
      if(dd>.5){const step=Math.min(dd,dt*5.4),dx=(dest.x-owner.x)/dd*step,dy=(dest.y-owner.y)/dd*step;
-      owner.x+=dx;owner.y+=dy;if(dx*dir>0)this.stats[owner.side].forwardCarryMeters+=dx*dir;
+      owner.x+=dx;owner.y+=dy;if(dx*dir>0){this.stats[owner.side].forwardCarryMeters+=dx*dir;owner.carryMeters=(owner.carryMeters||0)+dx*dir;}
      }else owner.aiEscape=null}
    if(!owner.aiEscape&&remaining>12&&pressure>2.5){
      const lane=safeForwardDribble(this,owner);
@@ -439,6 +439,7 @@ export class MatchEngine{
       const step=Math.min(d,dt*(2.0+owner.rating/90));
       owner.x=clamp(owner.x+dx/d*step,2,103);
       owner.y=clamp(owner.y+dy/d*step,2,66);
+      owner.carryMeters=(owner.carryMeters||0)+Math.max(0,dx/d*step*dir);
      }else{
       // A blocked lane is a reason to release the ball quickly, not collide
       // with the nearest defender or send another random backward pass.
@@ -757,7 +758,7 @@ export class MatchEngine{
   const end=outcome==='save'&&!parryCorner?
     {x:goal-dir*(2.0+this.random(0,1.4)),y:saveY}:
     {x:goal+dir*.65,y:outcome==='miss'?targetY:saveY};
-  this.ballFree();this.ball.flight={type:'shot',side,from,start,end,t:0,duration:clamp(d/47,.28,.88),goalChance,onTarget:effectiveOnTarget,xg,penalty,freeKick,header,assist,outcome,keeper,parryCorner,...shot};
+  this.ballFree();this.ball.flight={type:'shot',side,from,start,end,t:0,duration:clamp(d/47,.28,.88),goalChance,onTarget:effectiveOnTarget,xg,penalty,freeKick,header,assist,outcome,keeper,parryCorner,emptyNet:!!emptyNet,...shot};
   this.phase=penalty?'penalti':freeKick?'falta directa':'disparo';
   this.add('shot',side,penalty?`${from.name} lanza el penalti.`:freeKick?`${from.name} ejecuta la falta directa.`:
    `${from.name} ${header?'cabecea':shot.style==='curl'?'busca la escuadra con rosca':shot.style==='power'?'arma un disparo potente':'remata'}.`,
@@ -811,7 +812,12 @@ export class MatchEngine{
   this.ball.flight=null;
   if(f.type==='clearance'){const side=1-f.lastSide,spot={x:clamp(f.end.x,1,104),y:f.end.y<34?0:68};this.add('throwIn',side,`Saque de banda para ${this.clubs[side].name}.`);this.stats[side].throwIns++;this.restartAt('throwIn',side,spot,1.06);return}
   if(f.type==='shot'){
-   if(f.onTarget)this.stats[f.side].onTarget++;
+   if(f.onTarget){
+    this.stats[f.side].onTarget++;
+    this.add('shotOnTarget',f.side,`${f.from.name} remata a puerta.`,f.from,{xg:f.xg,emptyNet:!!f.emptyNet});
+   }
+   if(!f.goalChance&&f.xg>.20)this.add('chanceMissed',f.side,
+    `${f.from.name} desaprovecha una ocasión de ${f.xg.toFixed(2)} xG.`,f.from,{xg:f.xg});
    if(f.goalChance){
     this.stats[f.side].goals++;this.goals.push({side:f.side,scorer:f.from.name,assist:f.assist,minute:Math.ceil(this.time/60),penalty:f.penalty});this.goalFlash=3.1;
     this.add('goal',f.side,`¡GOOOL! ${f.from.name}${f.penalty?' (p.)':''}${f.assist?' · asistencia de '+f.assist:''} · ${this.clubs[f.side].name}.`,f.from);
