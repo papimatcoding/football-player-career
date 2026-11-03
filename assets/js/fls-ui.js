@@ -101,7 +101,7 @@
     });
   }
   function clubline(){
-    if(!window.S&&!S)return;
+    if(!S)return;
     var node=document.querySelector('.v4-clubline');if(!node)return;
     node.insertBefore(crest(S.club.name,false),node.firstChild);
     var details=node.querySelector('div');if(!details)return;
@@ -180,6 +180,12 @@
     var f=flag(S.club.country);if(f)chip.appendChild(f);
     chip.appendChild(element('span','','Club actual · '+S.club.name));
     top.parentNode.insertBefore(chip,top.nextSibling);
+    var nation=S.player.nationality||'España';
+    var nationality=element('div','fls-clubchip fls-nationality');
+    var nationalityFlag=flag(nation);
+    if(nationalityFlag)nationality.appendChild(nationalityFlag);
+    nationality.appendChild(element('span','','Nacionalidad · '+nation));
+    chip.parentNode.insertBefore(nationality,chip.nextSibling);
   }
   function post(){
     if(!S||S.view!=='post')return;
